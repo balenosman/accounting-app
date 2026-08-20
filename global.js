@@ -1,4 +1,4 @@
-// خویندنەوەی هەموو داتاکان لە LocalStorage
+// global.js
 let db = {
   customers: JSON.parse(localStorage.getItem('oil_db_cust_v6')) || [],
   suppliers: JSON.parse(localStorage.getItem('oil_db_supp_v7')) || [],
@@ -10,7 +10,6 @@ let db = {
   expenses: JSON.parse(localStorage.getItem('oil_db_exp_v6')) || []
 };
 
-// فەنکشنی خەزنکردن کە لە هەموو شوێنێک بەکار دێت
 function saveGlobalDB() {
   localStorage.setItem('oil_db_cust_v6', JSON.stringify(db.customers));
   localStorage.setItem('oil_db_supp_v7', JSON.stringify(db.suppliers));
@@ -22,61 +21,46 @@ function saveGlobalDB() {
   localStorage.setItem('oil_db_exp_v6', JSON.stringify(db.expenses));
 }
 
-// 1. سڕینەوەی فرۆشتن و گەڕاندنەوەی زەیت و قەرز
+// فەنکشنەکانی سڕینەوەی گشتی
 function globalDeleteSale(id) {
   const s = db.sales.find(x => x.id === id);
   if (s) {
     const oil = db.readyOil.find(o => o.name === s.productName);
-    if (oil) {
-      oil.qty += (s.qty + (s.giftCartons || 0));
-    }
+    if (oil) oil.qty += (s.qty + (s.giftCartons || 0));
     if (s.payType === 'قەرز') {
       const cust = db.customers.find(c => c.id === s.customerId);
-      if (cust) {
-        cust.debtIQD = Math.max(0, (cust.debtIQD || 0) - s.total);
-      }
+      if (cust) cust.debtIQD = Math.max(0, (cust.debtIQD || 0) - s.total);
     }
   }
   db.sales = db.sales.filter(x => x.id !== id);
   saveGlobalDB();
 }
 
-// 2. سڕینەوەی کڕین و گەڕاندنەوەی مەواد و کەمکردنەوەی قەرز
 function globalDeletePurchase(id) {
   const p = db.purchases.find(x => x.id === id);
   if (p) {
     const mat = db.materials.find(m => m.id === p.matId);
-    if (mat) {
-      mat.qty = Math.max(0, (mat.qty || 0) - p.qty);
-    }
+    if (mat) mat.qty = Math.max(0, (mat.qty || 0) - p.qty);
     const supp = db.suppliers.find(s => s.name === p.suppName);
     if (supp) {
-      if (p.currency === 'USD') {
-        supp.debtUSD = Math.max(0, (supp.debtUSD || 0) - p.total);
-      } else {
-        supp.debtIQD = Math.max(0, (supp.debtIQD || 0) - p.total);
-      }
+        if (p.currency === 'USD') supp.debtUSD = Math.max(0, (supp.debtUSD || 0) - p.total);
+        else supp.debtIQD = Math.max(0, (supp.debtIQD || 0) - p.total);
     }
   }
   db.purchases = db.purchases.filter(x => x.id !== id);
   saveGlobalDB();
 }
 
-// 3. سڕینەوەی بەرهەمهێنان و گەڕاندنەوەی مەواد بۆ مەخزەن
 function globalDeleteProduction(id) {
   const prod = db.productions.find(x => x.id === id);
   if (prod) {
     const oil = db.readyOil.find(o => o.id === prod.oilId);
     if (oil) {
       oil.qty = Math.max(0, oil.qty - prod.cartonsProduced);
-      if (oil.bom && oil.bom.length > 0) {
-        oil.bom.forEach(b => {
-          const mat = db.materials.find(m => m.id === b.matId);
-          if (mat) {
-            mat.qty += (b.qty * prod.cartonsProduced);
-          }
-        });
-      }
+      if (oil.bom) oil.bom.forEach(b => {
+        const mat = db.materials.find(m => m.id === b.matId);
+        if (mat) mat.qty += (b.qty * prod.cartonsProduced);
+      });
     }
   }
   db.productions = db.productions.filter(x => x.id !== id);
