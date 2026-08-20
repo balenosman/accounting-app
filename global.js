@@ -1,4 +1,4 @@
-// ==================== global.js (فایلی گشتی سیستەم) ====================
+// ==================== global.js (فایلی گشتی ناوەندی سیستەم) ====================
 
 let db = {
   customers: JSON.parse(localStorage.getItem('oil_db_cust_v6')) || [],
@@ -23,7 +23,45 @@ function saveGlobalDB() {
   localStorage.setItem('oil_db_exp_v6', JSON.stringify(db.expenses));
 }
 
-// ١. سڕینەوەی فرۆشتن (دەگەڕێنێتەوە مەخزەنی زەیت و قەرزی کڕیار پاکدەکاتەوە)
+// ==================== فەنکشنەکانی زیادکردنی گشتی ====================
+
+function globalAddSupplier(name, phone, address) {
+  db.suppliers.push({
+    id: Date.now(),
+    name: name.trim(),
+    phone: phone.trim(),
+    address: address.trim(),
+    debtIQD: 0,
+    debtUSD: 0
+  });
+  saveGlobalDB();
+}
+
+function globalAddCustomer(name, phone, address) {
+  db.customers.push({
+    id: Date.now(),
+    name: name.trim(),
+    phone: phone.trim(),
+    address: address.trim(),
+    debtIQD: 0,
+    debtUSD: 0
+  });
+  saveGlobalDB();
+}
+
+function globalAddMaterial(name, unit) {
+  db.materials.push({
+    id: Date.now(),
+    name: name.trim(),
+    unit: unit.trim(),
+    qty: 0,
+    lastCost: 0
+  });
+  saveGlobalDB();
+}
+
+// ==================== فەنکشنەکانی سڕینەوەی گشتی (کە داتاکان دەگەڕێننەوە) ====================
+
 function globalDeleteSale(id) {
   const s = db.sales.find(x => x.id === id);
   if (s) {
@@ -42,7 +80,6 @@ function globalDeleteSale(id) {
   saveGlobalDB();
 }
 
-// ٢. سڕینەوەی کڕین (مەواد لە مەخزەن کەمدەکاتەوە و قەرزی دابینکەر دەگەڕێنێتەوە)
 function globalDeletePurchase(id) {
   const p = db.purchases.find(x => x.id === id);
   if (p) {
@@ -63,7 +100,6 @@ function globalDeletePurchase(id) {
   saveGlobalDB();
 }
 
-// ٣. سڕینەوەی بەرهەمهێنان (زەیتەکە لە مەخزەن دەردەکات و مەوادە خاوەکان دەگەڕێنێتەوە)
 function globalDeleteProduction(id) {
   const prod = db.productions.find(x => x.id === id);
   if (prod) {
