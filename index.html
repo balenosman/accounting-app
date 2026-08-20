@@ -78,20 +78,20 @@
           <p id="dashTotalDebts" class="text-2xl font-black text-amber-600 mt-1">0 IQD</p>
         </div>
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold text-slate-500">بەهای سەرمایەی ماوە لە کۆگا</span>
+          <span class="text-xs font-bold text-slate-500">سەرمایەی ماوە لە کۆگا</span>
           <p id="dashTotalStockVal" class="text-2xl font-black text-[#244b5c] mt-1">0 IQD</p>
         </div>
       </div>
     </section>
 
-    <!-- ٢. هێڵی بەرهەمهێنان (Production) -->
+    <!-- ٢. بەرهەمهێنان -->
     <section id="sec-production" class="space-y-6 hidden">
       <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex items-center gap-2 pb-2 border-b">
           <span class="text-xl">⚙️</span>
           <div>
-            <h2 class="text-base font-bold text-slate-800">بەرهەمهێنانی زەیت (دروستکردن)</h2>
-            <p class="text-xs text-slate-500">بەرهەمهێنان خۆکارانە پێکهاتەکان لە مەواد کەم دەکاتەوە و دەبەی زەیت زیاد دەکات.</p>
+            <h2 class="text-base font-bold text-slate-800">بەرهەمهێنانی زەیت</h2>
+            <p class="text-xs text-slate-500">پێکهاتەکان لە مەواد کەمدەبنەوە و زەیتی ئامادەبوو زیاد دەبێت.</p>
           </div>
         </div>
 
@@ -101,9 +101,8 @@
             <select id="produceOilSelect" onchange="showBOMPreview()" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-white"></select>
           </div>
 
-          <!-- پێشاندانی پێکهاتەکان -->
           <div id="bomPreviewBox" class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1 hidden">
-            <span class="font-bold text-slate-700 block mb-1">پێکهاتەی پێویست بۆ هەر یەک دەبە:</span>
+            <span class="font-bold text-slate-700 block mb-1">پێکهاتەی پێویست بۆ هەر ١ دەبە:</span>
             <ul id="bomPreviewList" class="list-disc list-inside text-slate-600 space-y-0.5"></ul>
           </div>
 
@@ -117,7 +116,7 @@
       </div>
     </section>
 
-    <!-- ٣. مەخزەن: زەیتی ئامادەبوو (لەگەڵ دیاریکردنی پێکهاتەکان) -->
+    <!-- ٣. مەخزەن: زەیتی ئامادەبوو -->
     <section id="sec-warehouse" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
@@ -135,9 +134,17 @@
               <input type="number" step="any" id="oilDefPrice" placeholder="نرخی فرۆشتن" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
             </div>
 
-            <!-- دیاریکردنی پێکهاتەکان (BOM) -->
+            <!-- بەشی پێکهاتەکان -->
             <div class="border-t pt-3 space-y-2">
-              <span class="block text-xs font-bold text-slate-700">پێکهاتەکانی دروستکردنی ئەم دەبەیە:</span>
+              <div class="flex justify-between items-center">
+                <span class="block text-xs font-bold text-slate-700">پێکهاتەکانی پێویست:</span>
+                <a href="javascript:void(0)" onclick="navigate('materials')" class="text-[11px] text-[#244b5c] underline font-semibold">➕ ناساندنی پێکهاتەی نوێ</a>
+              </div>
+              
+              <div id="noMatWarning" class="p-2 bg-amber-50 border border-amber-200 rounded text-[11px] text-amber-800 hidden">
+                ⚠️ هیچ پێکهاتەیەک نەناسێنراوە! سەرەتا بچۆ بەشی <strong>🌾 مەواد</strong> و پێکهاتەکان داخڵ بکە.
+              </div>
+
               <div class="flex gap-2">
                 <select id="bomMatSelect" class="w-2/3 border border-slate-300 rounded-lg p-1.5 text-xs bg-white"></select>
                 <input type="number" step="any" id="bomMatQty" placeholder="بڕ" class="w-1/3 border border-slate-300 rounded-lg p-1.5 text-xs">
@@ -171,7 +178,53 @@
       </div>
     </section>
 
-    <!-- ٤. کڕین (Purchases) -->
+    <!-- ٤. مەواد: پێکهاتەکانی دروستکردنی زەیت -->
+    <section id="sec-materials" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <div class="flex items-center gap-2 mb-3 pb-2 border-b">
+            <span class="text-lg">🌾</span>
+            <h2 class="text-sm font-bold text-slate-800">ناساندنی پێکهاتە (مەواد)</h2>
+          </div>
+          <form id="materialForm" onsubmit="defineMaterial(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی پێکهاتە *</label>
+              <input type="text" id="matDefName" placeholder="وەک: Preform، دەبەی 5L، ستیکەر، زەیتی خاو" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">یەکەی پێوانە</label>
+              <select id="matDefUnit" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white">
+                <option value="دانە">دانە (Piece)</option>
+                <option value="کیلۆگرام">کیلۆگرام (Kg)</option>
+                <option value="تەن">تەن (Ton)</option>
+                <option value="لیتر">لیتر (Liter)</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full bg-[#244b5c] hover:bg-[#1a3744] text-white font-bold py-2.5 rounded-lg text-xs transition">ناساندنی پێکهاتە</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">لیستی پێکهاتە ناسێنراوەکان و بڕی ماوە</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-50 border-b text-slate-600">
+                <tr>
+                  <th class="p-3">پێکهاتە</th>
+                  <th class="p-3">بڕی ماوە لە کۆگا</th>
+                  <th class="p-3">دوایین تێچووی کڕین</th>
+                  <th class="p-3">کۆی بەها</th>
+                  <th class="p-3">کردار</th>
+                </tr>
+              </thead>
+              <tbody id="materialsTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ٥. کڕین -->
     <section id="sec-purchases" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
@@ -218,53 +271,7 @@
       </div>
     </section>
 
-    <!-- ٥. مەواد: پێکهاتەکانی دروستکردنی زەیت -->
-    <section id="sec-materials" class="space-y-6 hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
-          <div class="flex items-center gap-2 mb-3 pb-2 border-b">
-            <span class="text-lg">🌾</span>
-            <h2 class="text-sm font-bold text-slate-800">ناساندنی پێکهاتە (مەواد)</h2>
-          </div>
-          <form id="materialForm" onsubmit="defineMaterial(event)" class="space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی پێکهاتە *</label>
-              <input type="text" id="matDefName" placeholder="وەک: Preform، دەبەی 5L، ستیکەر، زەیتی خاو" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">یەکەی پێوانە</label>
-              <select id="matDefUnit" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white">
-                <option value="دانە">دانە (Piece)</option>
-                <option value="کیلۆگرام">کیلۆگرام (Kg)</option>
-                <option value="تەن">تەن (Ton)</option>
-                <option value="لیتر">لیتر (Liter)</option>
-              </select>
-            </div>
-            <button type="submit" class="w-full bg-[#244b5c] hover:bg-[#1a3744] text-white font-bold py-2.5 rounded-lg text-xs transition">ناساندنی پێکهاتە</button>
-          </form>
-        </div>
-
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 class="text-sm font-bold text-slate-800 mb-4">لیستی پێکهاتە ناسێنراوەکان و بڕی ماوە</h2>
-          <div class="overflow-x-auto">
-            <table class="w-full text-right text-xs">
-              <thead class="bg-slate-50 border-b text-slate-600">
-                <tr>
-                  <th class="p-3">پێکهاتە</th>
-                  <th class="p-3">بڕی ماوە لە کۆگا</th>
-                  <th class="p-3">دوایین تێچووی کڕین</th>
-                  <th class="p-3">کۆی بەها</th>
-                  <th class="p-3">کردار</th>
-                </tr>
-              </thead>
-              <tbody id="materialsTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ٦. فرۆشتن (Sales) -->
+    <!-- ٦. فرۆشتن -->
     <section id="sec-sales" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
@@ -320,7 +327,7 @@
       </div>
     </section>
 
-    <!-- ٧. کڕیار (Customers) -->
+    <!-- ٧. کڕیار -->
     <section id="sec-customers" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
@@ -366,7 +373,7 @@
       </div>
     </section>
 
-    <!-- ٨. قەرز (Debts) -->
+    <!-- ٨. قەرز -->
     <section id="sec-debts" class="space-y-6 hidden">
       <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
         <h2 class="text-base font-bold text-slate-800 mb-4">تۆماری قەرزی کڕیاران و وەرگرتنەوەی پارە</h2>
@@ -386,7 +393,7 @@
       </div>
     </section>
 
-    <!-- ٩. خەرجی (Expenses) -->
+    <!-- ٩. خەرجی -->
     <section id="sec-expenses" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
@@ -434,7 +441,7 @@
       </div>
     </section>
 
-    <!-- ١٠. ڕاپۆرت (Reports) -->
+    <!-- ١٠. ڕاپۆرت -->
     <section id="sec-reports" class="space-y-6 hidden">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <h2 class="text-base font-bold text-slate-800">ڕاپۆرتی دارایی کارگە</h2>
@@ -459,7 +466,7 @@
       </div>
     </section>
 
-    <!-- ١١. بەڕێوەبردن (Admin) -->
+    <!-- ١١. بەڕێوەبردن -->
     <section id="sec-admin" class="space-y-6 hidden">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <h2 class="text-base font-bold text-slate-800">بەڕێوەبردن و باکئەپی سیستەم</h2>
@@ -476,25 +483,25 @@
   </main>
 
   <script>
-    // State Store
+    // کلیلی داتاکان جێگیر کراون تا بە هیچ شێوەیەک نەسڕێنەوە
     let db = {
-      customers: JSON.parse(localStorage.getItem('oil_db_cust_v5')) || [],
-      readyOil: JSON.parse(localStorage.getItem('oil_db_oil_v5')) || [],
-      materials: JSON.parse(localStorage.getItem('oil_db_mat_v5')) || [],
-      purchases: JSON.parse(localStorage.getItem('oil_db_pur_v5')) || [],
-      sales: JSON.parse(localStorage.getItem('oil_db_sal_v5')) || [],
-      expenses: JSON.parse(localStorage.getItem('oil_db_exp_v5')) || []
+      customers: JSON.parse(localStorage.getItem('oil_db_cust_v6')) || [],
+      readyOil: JSON.parse(localStorage.getItem('oil_db_oil_v6')) || [],
+      materials: JSON.parse(localStorage.getItem('oil_db_mat_v6')) || [],
+      purchases: JSON.parse(localStorage.getItem('oil_db_pur_v6')) || [],
+      sales: JSON.parse(localStorage.getItem('oil_db_sal_v6')) || [],
+      expenses: JSON.parse(localStorage.getItem('oil_db_exp_v6')) || []
     };
 
     let tempBOM = [];
 
     function saveDB() {
-      localStorage.setItem('oil_db_cust_v5', JSON.stringify(db.customers));
-      localStorage.setItem('oil_db_oil_v5', JSON.stringify(db.readyOil));
-      localStorage.setItem('oil_db_mat_v5', JSON.stringify(db.materials));
-      localStorage.setItem('oil_db_pur_v5', JSON.stringify(db.purchases));
-      localStorage.setItem('oil_db_sal_v5', JSON.stringify(db.sales));
-      localStorage.setItem('oil_db_exp_v5', JSON.stringify(db.expenses));
+      localStorage.setItem('oil_db_cust_v6', JSON.stringify(db.customers));
+      localStorage.setItem('oil_db_oil_v6', JSON.stringify(db.readyOil));
+      localStorage.setItem('oil_db_mat_v6', JSON.stringify(db.materials));
+      localStorage.setItem('oil_db_pur_v6', JSON.stringify(db.purchases));
+      localStorage.setItem('oil_db_sal_v6', JSON.stringify(db.sales));
+      localStorage.setItem('oil_db_exp_v6', JSON.stringify(db.expenses));
       renderAll();
     }
 
@@ -506,17 +513,41 @@
       });
       document.getElementById(`sec-${tab}`).classList.remove('hidden');
       document.getElementById(`nav-${tab}`).classList.add('active');
+      
+      if (tab === 'warehouse' || tab === 'production' || tab === 'purchases') {
+        updateDynamicSelects();
+      }
       if (tab === 'production') showBOMPreview();
     }
 
-    // 1. پێکهاتەکانی ناو زەیت (BOM Handler)
+    // 1. نوێکردنەوەی هەموو لیستە هەڵبژاردنەکان (Dropdowns)
+    function updateDynamicSelects() {
+      const bomSelect = document.getElementById('bomMatSelect');
+      const purSelect = document.getElementById('purItemSelect');
+      const noMatWarn = document.getElementById('noMatWarning');
+
+      bomSelect.innerHTML = '<option value="">پێکهاتە هەڵبژێرە...</option>';
+      purSelect.innerHTML = '<option value="">پێکهاتە هەڵبژێرە...</option>';
+
+      if (db.materials.length === 0) {
+        if (noMatWarn) noMatWarn.classList.remove('hidden');
+      } else {
+        if (noMatWarn) noMatWarn.classList.add('hidden');
+        db.materials.forEach(m => {
+          bomSelect.innerHTML += `<option value="${m.id}">${m.name} (${m.unit})</option>`;
+          purSelect.innerHTML += `<option value="${m.id}">${m.name} (${m.unit})</option>`;
+        });
+      }
+    }
+
+    // 2. پێکهاتەکانی ناو زەیت (BOM Handler)
     function addBOMRow() {
       const matId = parseInt(document.getElementById('bomMatSelect').value);
       const qty = parseFloat(document.getElementById('bomMatQty').value);
       const mat = db.materials.find(m => m.id === matId);
 
       if (!mat || !qty || qty <= 0) {
-        alert('تکایە پێکهاتە و بڕی دروست دیاریبکە');
+        alert('تکایە پێکهاتە هەڵبژێرە و بڕی پێویست بنووسە');
         return;
       }
 
@@ -558,7 +589,7 @@
       document.getElementById('oilWarehouseForm').reset();
     }
 
-    // 2. بەرهەمهێنان (Production Logic)
+    // 3. بەرهەمهێنان
     function showBOMPreview() {
       const oilId = parseInt(document.getElementById('produceOilSelect').value);
       const oil = db.readyOil.find(o => o.id === oilId);
@@ -587,18 +618,16 @@
 
       if (!oil) return;
 
-      // Check stock for all BOM materials
       if (oil.bom && oil.bom.length > 0) {
         for (let b of oil.bom) {
           const mat = db.materials.find(m => m.id === b.matId);
           const needed = b.qty * produceQty;
           if (!mat || mat.qty < needed) {
-            alert(`بڕی پێکهاتەی (${b.matName}) بەش ناکات!\nپێویستە: ${needed} ${b.unit}\nلە مەواد هەیە: ${mat ? mat.qty : 0} ${b.unit}`);
+            alert(`بڕی پێکهاتەی (${b.matName}) لە مەواد بەش ناکات!\nپێویستە: ${needed} ${b.unit}\nلە مەواد هەیە: ${mat ? mat.qty : 0} ${b.unit}`);
             return;
           }
         }
 
-        // Deduct from Materials
         for (let b of oil.bom) {
           const mat = db.materials.find(m => m.id === b.matId);
           mat.qty -= (b.qty * produceQty);
@@ -609,10 +638,10 @@
       saveDB();
       document.getElementById('produceForm').reset();
       showBOMPreview();
-      alert(`پرۆسەی بەرهەمهێنانی ${produceQty} دەبە بە سەرکەوتوویی ئەنجامدرا و کەرەستەکان لە مەواد کەمکرانەوە.`);
+      alert(`پرۆسەی بەرهەمهێنانی ${produceQty} دەبە بە سەرکەوتوویی ئەنجامدرا.`);
     }
 
-    // 3. ناساندنی مەواد
+    // 4. ناساندنی مەواد
     function defineMaterial(e) {
       e.preventDefault();
       db.materials.push({
@@ -624,9 +653,10 @@
       });
       saveDB();
       document.getElementById('materialForm').reset();
+      alert("پێکهاتەکە ناسێنرا! ئێستا لە بەشی مەخزەن دەتوانیت هەڵیبژێریت.");
     }
 
-    // 4. کڕین
+    // 5. کڕین
     function handlePurchase(e) {
       e.preventDefault();
       const matId = parseInt(document.getElementById('purItemSelect').value);
@@ -651,7 +681,7 @@
       document.getElementById('purchaseForm').reset();
     }
 
-    // 5. فرۆشتن
+    // 6. فرۆشتن
     function handleSale(e) {
       e.preventDefault();
       const custId = parseInt(document.getElementById('saleCustomerSelect').value);
@@ -695,7 +725,7 @@
       if (oil) document.getElementById('salePrice').value = oil.price;
     }
 
-    // 6. کڕیاران و خەرجی
+    // 7. کڕیاران و خەرجی
     function addCustomer(e) {
       e.preventDefault();
       db.customers.push({
@@ -731,7 +761,7 @@
       document.getElementById('expenseForm').reset();
     }
 
-    // Deletes
+    // سڕینەوەکان
     function deleteReadyOil(id) { if(confirm('سڕینەوە؟')){ db.readyOil = db.readyOil.filter(x => x.id !== id); saveDB(); } }
     function deleteMaterial(id) { if(confirm('سڕینەوە؟')){ db.materials = db.materials.filter(x => x.id !== id); saveDB(); } }
     function deletePurchase(id) { if(confirm('سڕینەوە؟')){ db.purchases = db.purchases.filter(x => x.id !== id); saveDB(); } }
@@ -741,14 +771,11 @@
 
     // Render Data
     function renderAll() {
-      // 1. Materials Table & Dropdowns
-      const matTbody = document.getElementById('materialsTableBody');
-      const bomSelect = document.getElementById('bomMatSelect');
-      const purSelect = document.getElementById('purItemSelect');
-      matTbody.innerHTML = '';
-      bomSelect.innerHTML = '<option value="">پێکهاتە هەڵبژێرە...</option>';
-      purSelect.innerHTML = '<option value="">پێکهاتە هەڵبژێرە...</option>';
+      updateDynamicSelects();
 
+      // Materials Table
+      const matTbody = document.getElementById('materialsTableBody');
+      matTbody.innerHTML = '';
       let totalMatVal = 0;
       db.materials.forEach(m => {
         const val = m.qty * m.lastCost;
@@ -762,11 +789,9 @@
             <td class="p-3"><button onclick="deleteMaterial(${m.id})" class="text-rose-500 hover:underline">سڕینەوە</button></td>
           </tr>
         `;
-        bomSelect.innerHTML += `<option value="${m.id}">${m.name} (${m.unit})</option>`;
-        purSelect.innerHTML += `<option value="${m.id}">${m.name} (${m.unit})</option>`;
       });
 
-      // 2. Ready Oil Table & Production/Sales Dropdowns
+      // Ready Oil Table & Dropdowns
       const oilTbody = document.getElementById('oilWarehouseTableBody');
       const prodOilSelect = document.getElementById('produceOilSelect');
       const saleOilSelect = document.getElementById('saleOilSelect');
@@ -793,7 +818,7 @@
         saleOilSelect.innerHTML += `<option value="${o.id}">${o.name} (ماوە: ${o.qty})</option>`;
       });
 
-      // 3. Purchases Table
+      // Purchases Table
       const purTbody = document.getElementById('purchasesTableBody');
       purTbody.innerHTML = '';
       let totalPurchasesAmount = 0;
@@ -810,7 +835,7 @@
         `;
       });
 
-      // 4. Customers & Debts Table
+      // Customers & Debts Table
       const custTbody = document.getElementById('customersTableBody');
       const debtsTbody = document.getElementById('debtsTableBody');
       const saleCustSelect = document.getElementById('saleCustomerSelect');
@@ -840,7 +865,7 @@
         saleCustSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
       });
 
-      // 5. Sales Table
+      // Sales Table
       const salesTbody = document.getElementById('salesTableBody');
       salesTbody.innerHTML = '';
       let totalSalesAmount = 0;
@@ -858,7 +883,7 @@
         `;
       });
 
-      // 6. Expenses Table
+      // Expenses Table
       const expTbody = document.getElementById('expensesTableBody');
       expTbody.innerHTML = '';
       let totalExpAmount = 0;
@@ -874,7 +899,7 @@
         `;
       });
 
-      // 7. Metrics & Reports
+      // Metrics & Reports
       document.getElementById('dashTotalSales').innerText = totalSalesAmount.toLocaleString() + ' IQD';
       document.getElementById('dashTotalPurchases').innerText = totalPurchasesAmount.toLocaleString() + ' IQD';
       document.getElementById('dashTotalDebts').innerText = totalDebts.toLocaleString() + ' IQD';
