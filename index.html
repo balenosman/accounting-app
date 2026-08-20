@@ -3,205 +3,165 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سیستەمی کارگەی زەیت</title>
+  <title>سیستەمی حساباتی کارگەی زەیت</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Vazirmatn', sans-serif; }
     th, td { white-space: nowrap; }
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-bottom: 3px solid #38bdf8;
+      color: #ffffff;
+      font-weight: 700;
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
+<body class="bg-slate-100 text-slate-800 min-h-screen">
 
-  <!-- سەرپەڕ و ناڤیگەیشن -->
-  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 border-b border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
-      <div class="flex items-center gap-3">
-        <div class="bg-emerald-600 text-white p-2 rounded-xl text-xl font-bold">🛢️</div>
-        <div>
-          <h1 class="text-base sm:text-lg font-bold">سیستەمی بەڕێوەبردنی کارگەی زەیت</h1>
-          <p class="text-xs text-slate-400">بەشی کۆگا و بەڕێوەبردنی کڕیاران</p>
-        </div>
-      </div>
-
-      <!-- دوگمەی گۆڕینی تابەکان -->
-      <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold">
-        <button id="btnTabWarehouse" onclick="switchTab('warehouse')" class="px-4 py-2 rounded-lg bg-emerald-600 text-white transition">📦 کۆگای کارگە</button>
-        <button id="btnTabCustomers" onclick="switchTab('customers')" class="px-4 py-2 rounded-lg text-slate-400 hover:text-white transition">👥 کڕیاران</button>
-      </div>
-
-      <!-- باکئەپ -->
-      <div class="flex items-center gap-2">
-        <button onclick="exportData()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs px-3 py-1.5 rounded-lg transition text-slate-200">💾 باکئەپ</button>
-        <label class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs px-3 py-1.5 rounded-lg cursor-pointer transition text-slate-200">
-          📂 گەڕاندنەوە
-          <input type="file" id="importFile" onchange="importData(event)" class="hidden">
-        </label>
+  <!-- ناوپۆشی سەرەکی بەپێی وێنەکە (Navigation Bar) -->
+  <nav class="bg-[#244b5c] text-slate-100 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 flex items-center justify-between overflow-x-auto">
+      <div class="flex items-center gap-1 py-1 text-xs sm:text-sm font-medium">
+        <button onclick="navigate('home')" id="nav-home" class="nav-link active flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>🏠</span> سەرەکی
+        </button>
+        <button onclick="navigate('sales')" id="nav-sales" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>🛒</span> فرۆشتن
+        </button>
+        <button onclick="navigate('customers')" id="nav-customers" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>👥</span> کڕیار
+        </button>
+        <button onclick="navigate('debts')" id="nav-debts" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>📑</span> قەرز
+        </button>
+        <button onclick="navigate('warehouse')" id="nav-warehouse" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>🍾</span> مەخزەن (زەیتی ئامادەبوو)
+        </button>
+        <button onclick="navigate('materials')" id="nav-materials" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>🌾</span> مەواد (پێکهاتەکان)
+        </button>
+        <button onclick="navigate('expenses')" id="nav-expenses" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>💸</span> خەرجی
+        </button>
+        <button onclick="navigate('reports')" id="nav-reports" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>📊</span> ڕاپۆرت
+        </button>
+        <button onclick="navigate('admin')" id="nav-admin" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10">
+          <span>⚙️</span> بەڕێوەبردن
+        </button>
       </div>
     </div>
-  </header>
+  </nav>
 
-  <main class="max-w-7xl mx-auto px-4 mt-6">
+  <main class="max-w-7xl mx-auto p-4 sm:p-6">
 
-    <!-- ========================================== -->
-    <!-- بەشی یەکەم: کۆگا (WAREHOUSE)               -->
-    <!-- ========================================== -->
-    <section id="section-warehouse" class="space-y-6">
-      
-      <!-- ئامارەکانی کۆگا -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold text-slate-500">کۆی بەهای کەلوپەلی ناو کۆگا</span>
-          <p id="totalStockValue" class="text-xl font-black text-emerald-600 mt-1">0 IQD</p>
+    <!-- ١. سەرەکی (Dashboard) -->
+    <section id="sec-home" class="space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-500">کۆی فرۆشراو</span>
+          <p id="dashTotalSales" class="text-2xl font-black text-emerald-600 mt-1">0 IQD</p>
         </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold text-slate-500">جۆری کەرەستەکان</span>
-          <p id="totalItemsCount" class="text-xl font-black text-blue-600 mt-1">0 بڕگە</p>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-500">کۆی قەرز لەلای کڕیار</span>
+          <p id="dashTotalDebts" class="text-2xl font-black text-amber-600 mt-1">0 IQD</p>
         </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold text-slate-500">کەرەستەی کەمبووەوە (ئاگاداری)</span>
-          <p id="lowStockCount" class="text-xl font-black text-rose-600 mt-1">0 کەرەستە</p>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-500">کۆی خەرجییەکان</span>
+          <p id="dashTotalExpenses" class="text-2xl font-black text-rose-600 mt-1">0 IQD</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-500">بەهای سەرمایەی مەخزەن و مەواد</span>
+          <p id="dashTotalStockVal" class="text-2xl font-black text-[#244b5c] mt-1">0 IQD</p>
         </div>
       </div>
+    </section>
 
+    <!-- ٢. فرۆشتن (Sales) -->
+    <section id="sec-sales" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- فۆڕمی کەرەستە بۆ کۆگا -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 h-fit">
-          <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b">زیادکردنی کەلوپەل بۆ کۆگا</h2>
-          <form id="inventoryForm" onsubmit="handleInventorySubmit(event)" class="space-y-3">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b">تۆمارکردنی فرۆشتنی زەیت</h2>
+          <form id="salesForm" onsubmit="handleSale(event)" class="space-y-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی کەلوپەل / پێکهاتە *</label>
-              <input type="text" id="itemName" placeholder="بۆ نموونە: Preform 1500Ml، ستیکەر، زەیتی فەل" required class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">کڕیار هەڵبژێرە *</label>
+              <select id="saleCustomerSelect" required class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white"></select>
             </div>
-
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">جۆری زەیت (مەخزەن) *</label>
+              <select id="saleOilSelect" onchange="autoFillPrice()" required class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white"></select>
+            </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">پۆلێن</label>
-                <select id="itemCategory" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
-                  <option value="پێکهاتە و قاپ (Packaging)">پێکهاتە و قاپ (Packaging)</option>
-                  <option value="ماددەی خاو (Raw Materials)">ماددەی خاو (Raw Materials)</option>
-                  <option value="ستیکەر (Stickers)">ستیکەر (Stickers)</option>
-                  <option value="بەرهەمی ئامادەبوو (Finished Goods)">بەرهەمی ئامادەبوو (Finished Goods)</option>
-                  <option value="هیتر">هیتر</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">یەکەی پێوانە</label>
-                <select id="itemUnit" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
-                  <option value="دانە">دانە (Pcs)</option>
-                  <option value="دەبە">دەبە (Bottle/Tin)</option>
-                  <option value="کیلۆگرام">کیلۆگرام (Kg)</option>
-                  <option value="تەن">تەن (Ton)</option>
-                  <option value="لیتر">لیتر (Liter)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">بڕی کۆگا (Storage) *</label>
-                <input type="number" step="any" id="itemQty" placeholder="بڕ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">ژمارەی دەبە/تەنەکە *</label>
+                <input type="number" step="any" id="saleQty" placeholder="بڕ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
               </div>
               <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1">نرخی یەکە (IQD) *</label>
-                <input type="number" step="any" id="itemPrice" placeholder="نرخ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+                <input type="number" step="any" id="salePrice" placeholder="نرخ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
               </div>
             </div>
-
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">کەمترین بڕی ئاگادارکردنەوە</label>
-              <input type="number" step="any" id="itemMinQty" value="10" placeholder="10" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">شێوازی پارەدان</label>
+              <select id="salePayType" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white">
+                <option value="نەخت (کاش)">نەخت (کاش)</option>
+                <option value="قەرز">قەرز</option>
+              </select>
             </div>
-
-            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs transition">تۆمارکردن لە کۆگا</button>
+            <button type="submit" class="w-full bg-[#244b5c] hover:bg-[#1a3744] text-white font-bold py-2.5 rounded-lg text-xs transition">تۆمارکردنی فرۆشتن</button>
           </form>
         </div>
 
-        <!-- لیستی کەرەستەکانی کۆگا -->
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-          <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-            <h2 class="text-sm font-bold text-slate-800">لیستی کەلوپەلەکانی ناو کۆگا</h2>
-            <div class="flex gap-2">
-              <select id="filterCategory" onchange="renderInventory()" class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white">
-                <option value="all">هەموو پۆلەکان</option>
-                <option value="پێکهاتە و قاپ (Packaging)">پێکهاتە و قاپ</option>
-                <option value="ماددەی خاو (Raw Materials)">ماددەی خاو</option>
-                <option value="ستیکەر (Stickers)">ستیکەر</option>
-                <option value="بەرهەمی ئامادەبوو (Finished Goods)">بەرهەمی ئامادەبوو</option>
-                <option value="هیتر">هیتر</option>
-              </select>
-              <input type="text" id="searchInventory" onkeyup="renderInventory()" placeholder="گەڕان..." class="border border-slate-300 rounded-lg px-2.5 py-1 text-xs w-36">
-            </div>
-          </div>
-
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">تۆماری وەسڵەکانی فرۆشتن</h2>
           <div class="overflow-x-auto">
             <table class="w-full text-right text-xs">
               <thead class="bg-slate-50 border-b text-slate-600">
                 <tr>
-                  <th class="p-3">ناوی کەلوپەل</th>
-                  <th class="p-3">پۆلێن</th>
-                  <th class="p-3">بڕی ماوە</th>
-                  <th class="p-3">نرخی یەکە</th>
-                  <th class="p-3">کۆی بەها</th>
+                  <th class="p-3">کڕیار</th>
+                  <th class="p-3">بەرهەم</th>
+                  <th class="p-3">بڕ</th>
+                  <th class="p-3">کۆی گشتی</th>
+                  <th class="p-3">شێواز</th>
                   <th class="p-3">کردار</th>
                 </tr>
               </thead>
-              <tbody id="inventoryTableBody" class="divide-y divide-slate-100"></tbody>
+              <tbody id="salesTableBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- بەشی دووەم: کڕیاران (CUSTOMERS)            -->
-    <!-- ========================================== -->
-    <section id="section-customers" class="space-y-6 hidden">
-      
-      <!-- ئامارەکانی کڕیاران -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold text-slate-500">کۆی گشتی کڕیاران</span>
-          <p id="totalCustomersCount" class="text-xl font-black text-blue-600 mt-1">0 کەس</p>
-        </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <span class="text-xs font-bold text-slate-500">کۆی قەرزی سەر کڕیاران</span>
-          <p id="totalCustomerDebt" class="text-xl font-black text-rose-600 mt-1">0 IQD</p>
-        </div>
-      </div>
-
+    <!-- ٣. کڕیار (Customers) -->
+    <section id="sec-customers" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- فۆڕمی زیادکردنی کڕیار -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 h-fit">
-          <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b">زیادکردنی کڕیاری نوێ</h2>
-          <form id="customerForm" onsubmit="handleCustomerSubmit(event)" class="space-y-3">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b">تۆمارکردنی کڕیار</h2>
+          <form id="customerForm" onsubmit="addCustomer(event)" class="space-y-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی بازرگان / کڕیار *</label>
-              <input type="text" id="custName" placeholder="ناوی بازرگان یان مارکێت" required class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی کڕیار / کۆمپانیا *</label>
+              <input type="text" id="custName" placeholder="ناوی بازرگان یان مارکێت" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">ژمارەی مۆبایل</label>
-              <input type="text" id="custPhone" placeholder="0750 000 0000" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <input type="text" id="custPhone" placeholder="0750 000 0000" class="w-full border border-slate-300 rounded-lg p-2 text-xs">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">شار / ناونیشان</label>
-              <input type="text" id="custAddress" placeholder="سلێمانی، هەولێر..." class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ناونیشان / شار</label>
+              <input type="text" id="custAddress" placeholder="سلێمانی، هەولێر..." class="w-full border border-slate-300 rounded-lg p-2 text-xs">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">قەرز / باڵانسی سەرەتایی (IQD)</label>
-              <input type="number" step="any" id="custBalance" value="0" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">قەرزی سەرەتایی (IQD)</label>
+              <input type="number" step="any" id="custDebt" value="0" class="w-full border border-slate-300 rounded-lg p-2 text-xs">
             </div>
-            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs transition">تۆمارکردنی کڕیار</button>
+            <button type="submit" class="w-full bg-[#244b5c] hover:bg-[#1a3744] text-white font-bold py-2.5 rounded-lg text-xs transition">تۆمارکردن</button>
           </form>
         </div>
 
-        <!-- خشتەی کڕیاران -->
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-sm font-bold text-slate-800">لیستی کڕیارە تۆمارکراوەکان</h2>
-            <input type="text" id="searchCustomer" onkeyup="renderCustomers()" placeholder="گەڕان بەپێی ناو..." class="border border-slate-300 rounded-lg px-2.5 py-1 text-xs w-36">
-          </div>
-
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">لیستی کڕیارەکان</h2>
           <div class="overflow-x-auto">
             <table class="w-full text-right text-xs">
               <thead class="bg-slate-50 border-b text-slate-600">
@@ -209,7 +169,7 @@
                   <th class="p-3">ناو</th>
                   <th class="p-3">مۆبایل</th>
                   <th class="p-3">ناونیشان</th>
-                  <th class="p-3">قەرز / باڵانس</th>
+                  <th class="p-3">قەرز</th>
                   <th class="p-3">کردار</th>
                 </tr>
               </thead>
@@ -220,182 +180,538 @@
       </div>
     </section>
 
+    <!-- ٤. قەرز (Debts) -->
+    <section id="sec-debts" class="space-y-6 hidden">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <h2 class="text-base font-bold text-slate-800 mb-4">تۆماری قەرزی کڕیاران و وەرگرتنەوەی پارە</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-slate-50 border-b text-slate-600">
+              <tr>
+                <th class="p-3">ناوی کڕیار</th>
+                <th class="p-3">مۆبایل</th>
+                <th class="p-3">کۆی قەرز</th>
+                <th class="p-3">پارەدان / وەرگرتنەوە</th>
+              </tr>
+            </thead>
+            <tbody id="debtsTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ٥. مەخزەن (زەیتی ئامادەبوو) -->
+    <section id="sec-warehouse" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b">تۆمارکردنی زەیتی ئامادەبوو بۆ فرۆشتن</h2>
+          <form id="oilWarehouseForm" onsubmit="addReadyOil(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی زەیتی ئامادەبوو *</label>
+              <input type="text" id="oilName" placeholder="وەک: زەیتی گوڵەبەڕۆژە 5 لیتری" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">قەبارە / جۆری دەبە</label>
+                <select id="oilSize" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white">
+                  <option value="دەبەی 1 لیتری">دەبەی 1 لیتری</option>
+                  <option value="دەبەی 2 لیتری">دەبەی 2 لیتری</option>
+                  <option value="دەبەی 4 لیتری">دەبەی 4 لیتری</option>
+                  <option value="دەبەی 5 لیتری">دەبەی 5 لیتری</option>
+                  <option value="تەنەکە">تەنەکە</option>
+                  <option value="فەل">فەل</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">ژمارەی دەبە لە مەخزەن *</label>
+                <input type="number" step="any" id="oilQty" placeholder="بڕ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">نرخی فرۆشتنی دەبە (IQD) *</label>
+              <input type="number" step="any" id="oilPrice" placeholder="نرخی فرۆشتن" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <button type="submit" class="w-full bg-[#244b5c] hover:bg-[#1a3744] text-white font-bold py-2.5 rounded-lg text-xs transition">تۆمارکردن لە مەخزەن</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">کۆگای زەیتی ئامادەکراو بۆ فرۆشتن</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-50 border-b text-slate-600">
+                <tr>
+                  <th class="p-3">ناوی بەرهەم</th>
+                  <th class="p-3">قەبارە</th>
+                  <th class="p-3">ژمارەی ماوە</th>
+                  <th class="p-3">نرخی فرۆشتن</th>
+                  <th class="p-3">کۆی بەها</th>
+                  <th class="p-3">کردار</th>
+                </tr>
+              </thead>
+              <tbody id="oilWarehouseTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ٦. مەواد (پێکهاتە و کەرەستەی خاو) -->
+    <section id="sec-materials" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b">تۆمارکردنی پێکهاتە (کەرەستەی خاو)</h2>
+          <form id="materialForm" onsubmit="addMaterial(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی پێکهاتە *</label>
+              <input type="text" id="matName" placeholder="وەک: Preform، ستیکەر، زەیتی خاو، دەبەی بەتاڵ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">جۆر</label>
+                <select id="matCategory" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white">
+                  <option value="پریفۆرم و دەبە (Preform/Tin)">پریفۆرم و دەبە</option>
+                  <option value="ستیکەر (Sticker)">ستیکەر</option>
+                  <option value="ماددەی خاو (Raw Oil/Seeds)">ماددەی خاو</option>
+                  <option value="قەپاغ و کارتۆن">قەپاغ و کارتۆن</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">یەکە</label>
+                <select id="matUnit" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white">
+                  <option value="دانە">دانە</option>
+                  <option value="کیلۆگرام">کیلۆگرام</option>
+                  <option value="تەن">تەن</option>
+                  <option value="لیتر">لیتر</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">بڕی کڕدراو (Storage) *</label>
+                <input type="number" step="any" id="matQty" placeholder="بڕ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">تێچووی یەکە (Price) *</label>
+                <input type="number" step="any" id="matCost" placeholder="نرخ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-[#244b5c] hover:bg-[#1a3744] text-white font-bold py-2.5 rounded-lg text-xs transition">زیادکردن بۆ مەواد</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">لیستی پێکهاتەکان (مەواد)</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-50 border-b text-slate-600">
+                <tr>
+                  <th class="p-3">پێکهاتە</th>
+                  <th class="p-3">جۆر</th>
+                  <th class="p-3">بڕی ماوە</th>
+                  <th class="p-3">تێچووی یەکە</th>
+                  <th class="p-3">کۆی بەها</th>
+                  <th class="p-3">کردار</th>
+                </tr>
+              </thead>
+              <tbody id="materialsTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ٧. خەرجی (Expenses) -->
+    <section id="sec-expenses" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b">تۆمارکردنی خەرجی کارگە</h2>
+          <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">جۆری خەرجی</label>
+              <select id="expCat" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white">
+                <option value="سوتەمەنی و گاز">سوتەمەنی و گاز</option>
+                <option value="کارەبا و ئاو">کارەبا و ئاو</option>
+                <option value="مووچە">مووچە</option>
+                <option value="چاککردنەوەی ئامێر">چاککردنەوەی ئامێر</option>
+                <option value="گواستنەوە">گواستنەوە</option>
+                <option value="خەرجی گشتی">خەرجی گشتی</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">وەسف / تێبینی *</label>
+              <input type="text" id="expDesc" placeholder="تێبینی خەرجی" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">بڕی پارە (IQD) *</label>
+              <input type="number" step="any" id="expAmount" placeholder="بڕ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-lg text-xs transition">تۆمارکردنی خەرجی</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">تۆماری خەرجییەکان</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-50 border-b text-slate-600">
+                <tr>
+                  <th class="p-3">جۆری خەرجی</th>
+                  <th class="p-3">وەسف</th>
+                  <th class="p-3">بڕی پارە</th>
+                  <th class="p-3">کردار</th>
+                </tr>
+              </thead>
+              <tbody id="expensesTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ٨. ڕاپۆرت (Reports) -->
+    <section id="sec-reports" class="space-y-6 hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-slate-800">ڕاپۆرتی دارایی و پوختەی گشتی کارگە</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+            <span class="text-xs font-bold text-emerald-800">کۆی داهات (فرۆشتن)</span>
+            <p id="repIncome" class="text-xl font-black text-emerald-600 mt-1">0 IQD</p>
+          </div>
+          <div class="p-4 bg-rose-50 rounded-xl border border-rose-200">
+            <span class="text-xs font-bold text-rose-800">کۆی خەرجییەکان</span>
+            <p id="repExpense" class="text-xl font-black text-rose-600 mt-1">0 IQD</p>
+          </div>
+          <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+            <span class="text-xs font-bold text-blue-800">قازانجی پوختە (Net Profit)</span>
+            <p id="repProfit" class="text-xl font-black text-blue-600 mt-1">0 IQD</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ٩. بەڕێوەبردن (Admin) -->
+    <section id="sec-admin" class="space-y-6 hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-slate-800">بەڕێوەبردن و باکئەپی سیستەم</h2>
+        <p class="text-xs text-slate-500">دەتوانیت لەم بەشەوە داتاکانت بپارێزیت یان باکئەپ بگەڕێنیتەوە.</p>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="exportData()" class="bg-[#244b5c] text-white text-xs px-4 py-2.5 rounded-lg font-bold">💾 دابەزاندنی باکئەپی گشتی (JSON)</button>
+          <label class="bg-slate-700 text-white text-xs px-4 py-2.5 rounded-lg font-bold cursor-pointer">
+            📂 گەڕاندنەوەی باکئەپ
+            <input type="file" id="importFile" onchange="importData(event)" class="hidden">
+          </label>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- لۆژیک و پاشەکەوتکردن -->
   <script>
-    // State - دەستپێکردن بە بەتاڵی بەبێ داتای ساختە
-    let inventory = JSON.parse(localStorage.getItem("oil_factory_inventory")) || [];
-    let customers = JSON.parse(localStorage.getItem("oil_factory_customers")) || [];
+    // State Store
+    let db = {
+      customers: JSON.parse(localStorage.getItem('oil_app_customers')) || [],
+      readyOil: JSON.parse(localStorage.getItem('oil_app_readyOil')) || [],
+      materials: JSON.parse(localStorage.getItem('oil_app_materials')) || [],
+      sales: JSON.parse(localStorage.getItem('oil_app_sales')) || [],
+      expenses: JSON.parse(localStorage.getItem('oil_app_expenses')) || []
+    };
 
-    function saveAll() {
-      localStorage.setItem("oil_factory_inventory", JSON.stringify(inventory));
-      localStorage.setItem("oil_factory_customers", JSON.stringify(customers));
-      renderInventory();
-      renderCustomers();
+    function saveDB() {
+      localStorage.setItem('oil_app_customers', JSON.stringify(db.customers));
+      localStorage.setItem('oil_app_readyOil', JSON.stringify(db.readyOil));
+      localStorage.setItem('oil_app_materials', JSON.stringify(db.materials));
+      localStorage.setItem('oil_app_sales', JSON.stringify(db.sales));
+      localStorage.setItem('oil_app_expenses', JSON.stringify(db.expenses));
+      renderAll();
     }
 
-    // گۆڕینی تابەکان
-    function switchTab(tab) {
-      const secWarehouse = document.getElementById("section-warehouse");
-      const secCustomers = document.getElementById("section-customers");
-      const btnWarehouse = document.getElementById("btnTabWarehouse");
-      const btnCustomers = document.getElementById("btnTabCustomers");
-
-      if (tab === 'warehouse') {
-        secWarehouse.classList.remove('hidden');
-        secCustomers.classList.add('hidden');
-        btnWarehouse.className = "px-4 py-2 rounded-lg bg-emerald-600 text-white transition";
-        btnCustomers.className = "px-4 py-2 rounded-lg text-slate-400 hover:text-white transition";
-      } else {
-        secWarehouse.classList.add('hidden');
-        secCustomers.classList.remove('hidden');
-        btnCustomers.className = "px-4 py-2 rounded-lg bg-emerald-600 text-white transition";
-        btnWarehouse.className = "px-4 py-2 rounded-lg text-slate-400 hover:text-white transition";
-      }
-    }
-
-    // 1. بەشی کۆگا
-    function renderInventory() {
-      const tbody = document.getElementById("inventoryTableBody");
-      const q = (document.getElementById("searchInventory") ? document.getElementById("searchInventory").value : "").toLowerCase();
-      const cat = document.getElementById("filterCategory") ? document.getElementById("filterCategory").value : "all";
-
-      tbody.innerHTML = "";
-      let totalValue = 0;
-      let lowCount = 0;
-
-      const filtered = inventory.filter(item => {
-        const matchName = item.name.toLowerCase().includes(q);
-        const matchCat = (cat === 'all' || item.category === cat);
-        return matchName && matchCat;
+    // Tab Navigation
+    function navigate(tab) {
+      const tabs = ['home', 'sales', 'customers', 'debts', 'warehouse', 'materials', 'expenses', 'reports', 'admin'];
+      tabs.forEach(t => {
+        document.getElementById(`sec-${t}`).classList.add('hidden');
+        document.getElementById(`nav-${t}`).classList.remove('active');
       });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">هیچ کەرەستەیەک تۆمار نەکراوە</td></tr>`;
-      } else {
-        filtered.forEach(item => {
-          const val = item.qty * item.price;
-          totalValue += val;
-          const isLow = item.qty <= (item.minQty || 0);
-          if (isLow) lowCount++;
-
-          tbody.innerHTML += `
-            <tr class="hover:bg-slate-50 transition">
-              <td class="p-3 font-bold text-slate-800">
-                ${item.name}
-                ${isLow ? '<span class="mr-1 text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full font-semibold">بڕی کەمە</span>' : ''}
-              </td>
-              <td class="p-3 text-slate-500">${item.category}</td>
-              <td class="p-3 font-bold ${isLow ? 'text-rose-600' : 'text-slate-800'}">${Number(item.qty).toLocaleString()} <span class="text-[10px] text-slate-400 font-normal">${item.unit}</span></td>
-              <td class="p-3">${Number(item.price).toLocaleString()} IQD</td>
-              <td class="p-3 font-bold text-emerald-700">${val.toLocaleString()} IQD</td>
-              <td class="p-3">
-                <button onclick="deleteInventory(${item.id})" class="text-rose-500 hover:text-rose-700 font-semibold">سڕینەوە</button>
-              </td>
-            </tr>
-          `;
-        });
-      }
-
-      document.getElementById("totalStockValue").innerText = totalValue.toLocaleString() + " IQD";
-      document.getElementById("totalItemsCount").innerText = inventory.length + " بڕگە";
-      document.getElementById("lowStockCount").innerText = lowCount + " کەرەستە";
+      document.getElementById(`sec-${tab}`).classList.remove('hidden');
+      document.getElementById(`nav-${tab}`).classList.add('active');
     }
 
-    function handleInventorySubmit(e) {
+    // 1. Customers Logic
+    function addCustomer(e) {
       e.preventDefault();
-      const name = document.getElementById("itemName").value.trim();
-      const category = document.getElementById("itemCategory").value;
-      const unit = document.getElementById("itemUnit").value;
-      const qty = parseFloat(document.getElementById("itemQty").value) || 0;
-      const price = parseFloat(document.getElementById("itemPrice").value) || 0;
-      const minQty = parseFloat(document.getElementById("itemMinQty").value) || 0;
-
-      const existing = inventory.find(i => i.name.toLowerCase() === name.toLowerCase() && i.unit === unit);
-      if (existing) {
-        existing.qty += qty;
-        existing.price = price;
-        existing.category = category;
-        existing.minQty = minQty;
-      } else {
-        inventory.push({ id: Date.now(), name, category, unit, qty, price, minQty });
-      }
-
-      saveAll();
-      document.getElementById("inventoryForm").reset();
-    }
-
-    function deleteInventory(id) {
-      if (confirm("دڵنیایت لە سڕینەوەی ئەم کەرەستەیە؟")) {
-        inventory = inventory.filter(i => i.id !== id);
-        saveAll();
-      }
-    }
-
-    // 2. بەشی کڕیاران
-    function renderCustomers() {
-      const tbody = document.getElementById("customersTableBody");
-      const q = (document.getElementById("searchCustomer") ? document.getElementById("searchCustomer").value : "").toLowerCase();
-
-      tbody.innerHTML = "";
-      let totalDebt = 0;
-
-      const filtered = customers.filter(c => c.name.toLowerCase().includes(q));
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">هیچ کڕیارێک تۆمار نەکراوە</td></tr>`;
-      } else {
-        filtered.forEach(c => {
-          const bal = parseFloat(c.balance || 0);
-          totalDebt += bal;
-
-          tbody.innerHTML += `
-            <tr class="hover:bg-slate-50 transition">
-              <td class="p-3 font-bold text-slate-800">${c.name}</td>
-              <td class="p-3 text-slate-600" dir="ltr">${c.phone || "-"}</td>
-              <td class="p-3 text-slate-600">${c.address || "-"}</td>
-              <td class="p-3 font-bold ${bal > 0 ? 'text-rose-600' : 'text-slate-600'}">${bal.toLocaleString()} IQD</td>
-              <td class="p-3">
-                <button onclick="deleteCustomer(${c.id})" class="text-rose-500 hover:text-rose-700 font-semibold">سڕینەوە</button>
-              </td>
-            </tr>
-          `;
-        });
-      }
-
-      document.getElementById("totalCustomersCount").innerText = customers.length + " کەس";
-      document.getElementById("totalCustomerDebt").innerText = totalDebt.toLocaleString() + " IQD";
-    }
-
-    function handleCustomerSubmit(e) {
-      e.preventDefault();
-      customers.push({
+      db.customers.push({
         id: Date.now(),
-        name: document.getElementById("custName").value.trim(),
-        phone: document.getElementById("custPhone").value.trim(),
-        address: document.getElementById("custAddress").value.trim(),
-        balance: parseFloat(document.getElementById("custBalance").value) || 0
+        name: document.getElementById('custName').value.trim(),
+        phone: document.getElementById('custPhone').value.trim(),
+        address: document.getElementById('custAddress').value.trim(),
+        debt: parseFloat(document.getElementById('custDebt').value) || 0
       });
-
-      saveAll();
-      document.getElementById("customerForm").reset();
+      saveDB();
+      document.getElementById('customerForm').reset();
     }
 
     function deleteCustomer(id) {
-      if (confirm("دڵنیایت لە سڕینەوەی ئەم کڕیارە؟")) {
-        customers = customers.filter(c => c.id !== id);
-        saveAll();
+      if (confirm('دڵنیایت لە سڕینەوەی ئەم کڕیارە؟')) {
+        db.customers = db.customers.filter(c => c.id !== id);
+        saveDB();
       }
     }
 
-    // باکئەپ
+    function payDebt(custId) {
+      const amount = prompt('بڕی پارەی وەرگیراو بنووسە (IQD):');
+      if (!amount || isNaN(amount)) return;
+      const c = db.customers.find(x => x.id === custId);
+      if (c) {
+        c.debt = Math.max(0, c.debt - parseFloat(amount));
+        saveDB();
+      }
+    }
+
+    // 2. Ready Oil Warehouse
+    function addReadyOil(e) {
+      e.preventDefault();
+      db.readyOil.push({
+        id: Date.now(),
+        name: document.getElementById('oilName').value.trim(),
+        size: document.getElementById('oilSize').value,
+        qty: parseFloat(document.getElementById('oilQty').value) || 0,
+        price: parseFloat(document.getElementById('oilPrice').value) || 0
+      });
+      saveDB();
+      document.getElementById('oilWarehouseForm').reset();
+    }
+
+    function deleteReadyOil(id) {
+      if (confirm('دڵنیایت لە سڕینەوە؟')) {
+        db.readyOil = db.readyOil.filter(o => o.id !== id);
+        saveDB();
+      }
+    }
+
+    // 3. Materials
+    function addMaterial(e) {
+      e.preventDefault();
+      db.materials.push({
+        id: Date.now(),
+        name: document.getElementById('matName').value.trim(),
+        category: document.getElementById('matCategory').value,
+        unit: document.getElementById('matUnit').value,
+        qty: parseFloat(document.getElementById('matQty').value) || 0,
+        cost: parseFloat(document.getElementById('matCost').value) || 0
+      });
+      saveDB();
+      document.getElementById('materialForm').reset();
+    }
+
+    function deleteMaterial(id) {
+      if (confirm('دڵنیایت لە سڕینەوە؟')) {
+        db.materials = db.materials.filter(m => m.id !== id);
+        saveDB();
+      }
+    }
+
+    // 4. Sales Logic
+    function handleSale(e) {
+      e.preventDefault();
+      const custId = parseInt(document.getElementById('saleCustomerSelect').value);
+      const oilId = parseInt(document.getElementById('saleOilSelect').value);
+      const qty = parseFloat(document.getElementById('saleQty').value) || 0;
+      const price = parseFloat(document.getElementById('salePrice').value) || 0;
+      const payType = document.getElementById('salePayType').value;
+
+      const customer = db.customers.find(c => c.id === custId);
+      const oil = db.readyOil.find(o => o.id === oilId);
+
+      if (!oil || oil.qty < qty) {
+        alert('بڕی زەیتی ئامادەبوو لە مەخزەن بەش ناکات!');
+        return;
+      }
+
+      oil.qty -= qty;
+      const total = qty * price;
+
+      if (payType === 'قەرز' && customer) {
+        customer.debt += total;
+      }
+
+      db.sales.unshift({
+        id: Date.now(),
+        customerName: customer ? customer.name : 'نەناسراو',
+        productName: oil.name,
+        qty,
+        price,
+        total,
+        payType
+      });
+
+      saveDB();
+      document.getElementById('salesForm').reset();
+    }
+
+    function deleteSale(id) {
+      if (confirm('دڵنیایت لە سڕینەوەی ئەم وەسڵە؟')) {
+        db.sales = db.sales.filter(s => s.id !== id);
+        saveDB();
+      }
+    }
+
+    function autoFillPrice() {
+      const oilId = parseInt(document.getElementById('saleOilSelect').value);
+      const oil = db.readyOil.find(o => o.id === oilId);
+      if (oil) document.getElementById('salePrice').value = oil.price;
+    }
+
+    // 5. Expenses
+    function addExpense(e) {
+      e.preventDefault();
+      db.expenses.unshift({
+        id: Date.now(),
+        category: document.getElementById('expCat').value,
+        desc: document.getElementById('expDesc').value.trim(),
+        amount: parseFloat(document.getElementById('expAmount').value) || 0
+      });
+      saveDB();
+      document.getElementById('expenseForm').reset();
+    }
+
+    function deleteExpense(id) {
+      if (confirm('دڵنیایت؟')) {
+        db.expenses = db.expenses.filter(x => x.id !== id);
+        saveDB();
+      }
+    }
+
+    // Render Function
+    function renderAll() {
+      // 1. Customers Table & Selects
+      const custTbody = document.getElementById('customersTableBody');
+      const debtsTbody = document.getElementById('debtsTableBody');
+      const saleCustSelect = document.getElementById('saleCustomerSelect');
+      custTbody.innerHTML = '';
+      debtsTbody.innerHTML = '';
+      saleCustSelect.innerHTML = '<option value="">کڕیار هەڵبژێرە...</option>';
+
+      let totalDebts = 0;
+      db.customers.forEach(c => {
+        totalDebts += (c.debt || 0);
+        custTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">${c.name}</td>
+            <td class="p-3" dir="ltr">${c.phone || '-'}</td>
+            <td class="p-3">${c.address || '-'}</td>
+            <td class="p-3 font-bold text-rose-600">${c.debt.toLocaleString()} IQD</td>
+            <td class="p-3"><button onclick="deleteCustomer(${c.id})" class="text-rose-500 hover:underline">سڕینەوە</button></td>
+          </tr>
+        `;
+
+        debtsTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">${c.name}</td>
+            <td class="p-3" dir="ltr">${c.phone || '-'}</td>
+            <td class="p-3 font-black text-rose-600 text-sm">${c.debt.toLocaleString()} IQD</td>
+            <td class="p-3">
+              <button onclick="payDebt(${c.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded text-xs">وەرگرتنەوەی قەرز</button>
+            </td>
+          </tr>
+        `;
+
+        saleCustSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+      });
+
+      // 2. Ready Oil Table & Select
+      const oilTbody = document.getElementById('oilWarehouseTableBody');
+      const saleOilSelect = document.getElementById('saleOilSelect');
+      oilTbody.innerHTML = '';
+      saleOilSelect.innerHTML = '<option value="">زەیت هەڵبژێرە...</option>';
+
+      let totalOilVal = 0;
+      db.readyOil.forEach(o => {
+        const val = o.qty * o.price;
+        totalOilVal += val;
+        oilTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">${o.name}</td>
+            <td class="p-3">${o.size}</td>
+            <td class="p-3 font-bold ${o.qty < 20 ? 'text-rose-600' : 'text-emerald-700'}">${o.qty.toLocaleString()} دەبە</td>
+            <td class="p-3">${o.price.toLocaleString()} IQD</td>
+            <td class="p-3 font-black text-slate-800">${val.toLocaleString()} IQD</td>
+            <td class="p-3"><button onclick="deleteReadyOil(${o.id})" class="text-rose-500 hover:underline">سڕینەوە</button></td>
+          </tr>
+        `;
+        saleOilSelect.innerHTML += `<option value="${o.id}">${o.name} (ماوە: ${o.qty})</option>`;
+      });
+
+      // 3. Materials Table
+      const matTbody = document.getElementById('materialsTableBody');
+      matTbody.innerHTML = '';
+      let totalMatVal = 0;
+      db.materials.forEach(m => {
+        const val = m.qty * m.cost;
+        totalMatVal += val;
+        matTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">${m.name}</td>
+            <td class="p-3 text-slate-500">${m.category}</td>
+            <td class="p-3 font-bold">${m.qty.toLocaleString()} ${m.unit}</td>
+            <td class="p-3">${m.cost.toLocaleString()} IQD</td>
+            <td class="p-3 font-bold text-slate-800">${val.toLocaleString()} IQD</td>
+            <td class="p-3"><button onclick="deleteMaterial(${m.id})" class="text-rose-500 hover:underline">سڕینەوە</button></td>
+          </tr>
+        `;
+      });
+
+      // 4. Sales Table
+      const salesTbody = document.getElementById('salesTableBody');
+      salesTbody.innerHTML = '';
+      let totalSalesAmount = 0;
+      db.sales.forEach(s => {
+        totalSalesAmount += s.total;
+        salesTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">${s.customerName}</td>
+            <td class="p-3">${s.productName}</td>
+            <td class="p-3 font-bold">${s.qty}</td>
+            <td class="p-3 font-black text-emerald-700">${s.total.toLocaleString()} IQD</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] ${s.payType === 'قەرز' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${s.payType}</span></td>
+            <td class="p-3"><button onclick="deleteSale(${s.id})" class="text-rose-500 hover:underline">سڕینەوە</button></td>
+          </tr>
+        `;
+      });
+
+      // 5. Expenses Table
+      const expTbody = document.getElementById('expensesTableBody');
+      expTbody.innerHTML = '';
+      let totalExpAmount = 0;
+      db.expenses.forEach(x => {
+        totalExpAmount += x.amount;
+        expTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold">${x.category}</td>
+            <td class="p-3">${x.desc}</td>
+            <td class="p-3 font-bold text-rose-600">${x.amount.toLocaleString()} IQD</td>
+            <td class="p-3"><button onclick="deleteExpense(${x.id})" class="text-rose-500 hover:underline">سڕینەوە</button></td>
+          </tr>
+        `;
+      });
+
+      // 6. Dashboard & Reports
+      document.getElementById('dashTotalSales').innerText = totalSalesAmount.toLocaleString() + ' IQD';
+      document.getElementById('dashTotalDebts').innerText = totalDebts.toLocaleString() + ' IQD';
+      document.getElementById('dashTotalExpenses').innerText = totalExpAmount.toLocaleString() + ' IQD';
+      document.getElementById('dashTotalStockVal').innerText = (totalOilVal + totalMatVal).toLocaleString() + ' IQD';
+
+      document.getElementById('repIncome').innerText = totalSalesAmount.toLocaleString() + ' IQD';
+      document.getElementById('repExpense').innerText = totalExpAmount.toLocaleString() + ' IQD';
+      document.getElementById('repProfit').innerText = (totalSalesAmount - totalExpAmount).toLocaleString() + ' IQD';
+    }
+
+    // Export/Import
     function exportData() {
-      const allData = { inventory, customers };
-      const str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData));
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
       const a = document.createElement('a');
-      a.setAttribute("href", str);
-      a.setAttribute("download", `Oil_System_Backup_${new Date().toISOString().slice(0,10)}.json`);
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `Oil_Factory_System.json`);
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -407,21 +723,18 @@
       const r = new FileReader();
       r.onload = (event) => {
         try {
-          const parsed = JSON.parse(event.target.result);
-          if (parsed.inventory) inventory = parsed.inventory;
-          if (parsed.customers) customers = parsed.customers;
-          saveAll();
-          alert("داتاکان بە سەرکەوتوویی بارکرانەوە!");
+          db = JSON.parse(event.target.result);
+          saveDB();
+          alert("داتاکان بە سەرکەوتوویی گەڕێندرانەوە!");
         } catch(err) {
-          alert("فایلی باکئەپ هەڵەیە!");
+          alert("فایلەکە دروست نییە!");
         }
       };
       r.readAsText(file);
     }
 
-    // کارپێکردنی سەرەتایی
-    renderInventory();
-    renderCustomers();
+    // Run
+    renderAll();
   </script>
 </body>
 </html>
