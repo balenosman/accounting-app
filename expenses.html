@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بەشی خەرجییەکان - کارگەی کاشۆ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Vazirmatn', sans-serif; }
+    th, td { white-space: nowrap; }
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-bottom: 3px solid #38bdf8;
+      color: #ffffff;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+  <!-- ناوپۆشی سەرەکی -->
+  <nav class="bg-[#244b5c] text-slate-100 shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 flex items-center justify-between overflow-x-auto">
+      <div class="flex items-center gap-1 py-1 text-xs sm:text-sm font-medium">
+        <a href="index.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>🏠</span> سەرەکی</a>
+        <a href="sales.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>🛒</span> فرۆشتن</a>
+        <a href="suppliers.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>🏢</span> دابینکەران</a>
+        <a href="customers.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>👥</span> کڕیاران</a>
+        <a href="warehouse.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>📦</span> مەخزەن</a>
+        <a href="purchases.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>📥</span> کڕین</a>
+        <a href="production.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>⚙️</span> بەرهەمهێنان</a>
+        <a href="materials.html" class="nav-link flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>🌾</span> مەواد</a>
+        <a href="expenses.html" class="nav-link active flex items-center gap-1 px-3 py-3 rounded-t-lg transition hover:bg-white/10"><span>💸</span> خەرجی</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- فۆڕمی تۆمارکردنی خەرجی -->
+      <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
+        <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">تۆمارکردنی خەرجی نوێ</h2>
+        <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">جۆری خەرجی *</label>
+            <select id="expCat" class="w-full border rounded-lg p-2 text-xs bg-white">
+              <option value="گشتی">خەرجی گشتی</option>
+              <option value="کرێ">کرێ و کارەبا</option>
+              <option value="گواستنەوە">گواستنەوە و کرێ ماشین</option>
+              <option value="مووچە">مووچە</option>
+            </select>
+          </div>
+          <div><label class="block text-xs font-semibold text-slate-600 mb-1">وەسف یان هۆکاری خەرجی *</label><input type="text" id="expDesc" required class="w-full border rounded-lg p-2 text-xs"></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">بڕی پارە *</label><input type="number" step="any" id="expAmount" required class="w-full border rounded-lg p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">دراو</label><select id="expCurrency" class="w-full border rounded-lg p-2 text-xs bg-white"><option value="IQD">IQD</option><option value="USD">USD</option></select></div>
+          </div>
+          <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردنی خەرجی</button>
+        </form>
+      </div>
+
+      <!-- لیستی خەرجییەکان -->
+      <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm">
+        <h2 class="text-sm font-bold text-slate-800 mb-4">لیستی خەرجییە تۆمارکراوەکان</h2>
+        <table class="w-full text-right text-xs">
+          <thead class="bg-slate-50 border-b text-slate-600">
+            <tr><th class="p-3">جۆر</th><th class="p-3">وەسف</th><th class="p-3">بڕ</th><th class="p-3">بەڕوار</th><th class="p-3 text-center">کردار</th></tr>
+          </thead>
+          <tbody id="expensesTableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let db = {
+      expenses: JSON.parse(localStorage.getItem('oil_db_exp_v6')) || []
+    };
+
+    function saveDB() {
+      localStorage.setItem('oil_db_exp_v6', JSON.stringify(db.expenses));
+      renderExpenses();
+    }
+
+    function addExpense(e) {
+      e.preventDefault();
+      db.expenses.unshift({
+        id: Date.now(),
+        category: document.getElementById('expCat').value,
+        desc: document.getElementById('expDesc').value.trim(),
+        amount: parseFloat(document.getElementById('expAmount').value) || 0,
+        currency: document.getElementById('expCurrency').value
+      });
+      saveDB();
+      document.getElementById('expenseForm').reset();
+      alert('خەرجییەکە بە سەرکەوتوویی تۆمارکرا.');
+    }
+
+    function deleteExpense(id) {
+      if (confirm('سڕینەوەی ئەم خەرجییە؟')) {
+        db.expenses = db.expenses.filter(x => x.id !== id);
+        saveDB();
+      }
+    }
+
+    function renderExpenses() {
+      const tbody = document.getElementById('expensesTableBody');
+      tbody.innerHTML = '';
+      if (db.expenses.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">هیچ خەرجییەک تۆمار نەکراوە</td></tr>`;
+        return;
+      }
+      db.expenses.forEach(ex => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold text-slate-700">${ex.category}</td>
+            <td class="p-3">${ex.desc}</td>
+            <td class="p-3 font-black text-rose-600">${ex.amount.toLocaleString()} ${ex.currency || 'IQD'}</td>
+            <td class="p-3 text-slate-500">${new Date(ex.id).toLocaleDateString('ku-IQ')}</td>
+            <td class="p-3 text-center">
+              <button onclick="deleteExpense(${ex.id})" title="سڕینەوە" class="text-rose-500 hover:text-rose-700">🗑️</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    renderExpenses();
+  </script>
+</body>
+</html>
