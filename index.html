@@ -19,7 +19,7 @@
       nav, .no-print, header, button { display: none !important; }
       body { background-color: #fff !important; padding: 0 !important; margin: 0 !important; }
       #invoicePrintModal { display: flex !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: auto !important; background: transparent !important; z-index: 9999 !important; padding: 0 !important; align-items: flex-start !important; justify-content: center !important; }
-      #invoicePrintContent { box-shadow: none !important; border: none !important; padding: 10px !important; width: 100% !important; max-width: 100% !important; }
+      #invoicePrintContent { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
     }
   </style>
 </head>
@@ -311,9 +311,10 @@
 
   </main>
 
-  <!-- فۆرماتی پرێنتکردنی وەسڵی فەرمی کاشۆ -->
+  <!-- ==================== پەنجەرەی پرێنت (MODAL) ==================== -->
   <div id="invoicePrintModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 hidden">
     <div id="invoicePrintContent" class="bg-white rounded-xl max-w-3xl w-full p-6 shadow-2xl space-y-4 text-xs">
+      
       <div class="flex justify-between items-start border-b pb-3">
         <div>
           <h1 class="text-base font-black text-slate-900">کۆمپانیای سروشتی کاشۆ</h1>[cite: 1]
@@ -331,10 +332,12 @@
           <p><span id="invPrintPayType">قەرز</span></p>[cite: 1]
         </div>
       </div>
+
       <div class="grid grid-cols-2 gap-4 bg-slate-50 p-2.5 rounded-lg border text-xs">
         <div><p><strong>بەڕێز:</strong> <span id="invPrintCustName">-</span></p><p><strong>ناونیشان:</strong> <span id="invPrintCustAddress">-</span></p></div>
         <div><p><strong>شۆفێر:</strong> <span id="invPrintDriverName">-</span></p><p><strong>تێبینی:</strong> <span id="invPrintNote">-</span></p></div>
       </div>
+
       <table class="w-full text-right border-collapse border border-slate-300 text-xs">
         <thead class="bg-slate-100 border-b text-slate-700">
           <tr>
@@ -363,6 +366,7 @@
           </tr>
         </tfoot>
       </table>
+
       <div class="flex justify-end pt-2">
         <div class="w-64 space-y-1 text-xs">
           <div class="flex justify-between p-1 bg-slate-50 border rounded"><span>کۆی پسوولە:</span><span id="invPrintTotalBill" class="font-bold">0 IQD</span></div>[cite: 1]
@@ -370,10 +374,18 @@
           <div class="flex justify-between p-1 bg-slate-800 text-white rounded"><span>قەرزی ئێستا:</span><span id="invPrintCurrentDebt" class="font-bold text-rose-300">0 IQD</span></div>[cite: 1]
         </div>
       </div>
+
+      <div class="grid grid-cols-3 gap-4 text-center pt-6 border-t font-semibold text-slate-600">
+        <div>ووردبین</div>[cite: 1]
+        <div>ژمێریار</div>[cite: 1]
+        <div>بەڕێوەبەری فرۆش</div>[cite: 1]
+      </div>
+
       <div class="flex justify-end gap-2 pt-4 no-print border-t">
         <button onclick="window.print()" class="bg-[#244b5c] text-white font-bold px-4 py-2 rounded text-xs">🖨️ پرێنت</button>
         <button onclick="closeInvoicePrint()" class="bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded text-xs">داخستن</button>
       </div>
+
     </div>
   </div>
 
