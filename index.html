@@ -3,150 +3,300 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بەڕێوەبردنی کڕیاران</title>
+  <title>سیستەمی بەڕێوەبردنی پێکهاتەکانی کارگەی زەیت</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
+  <style>
+    body { font-family: 'Vazirmatn', sans-serif; }
+    th, td { white-space: nowrap; }
+  </style>
 </head>
-<body class="bg-slate-100 text-slate-800 p-6">
-  <div class="max-w-6xl mx-auto space-y-6">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
 
-    <!-- سەرپەڕ -->
-    <div class="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-      <div>
-        <h1 class="text-xl font-bold text-slate-800">👥 بەشی کڕیاران و بازرگانەکان</h1>
-        <p class="text-xs text-slate-500 mt-1">تۆمارکردن، ژمارەی پەیوەندی، ناونیشان و چاودێری باڵانسی قەرز</p>
+  <!-- Header -->
+  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 border-b border-slate-700">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🏭</span>
+        <div>
+          <h1 class="text-lg font-bold">سیستەمی کۆگای پێکهاتە و کەلوپەل (Materials & Packaging)</h1>
+          <p class="text-xs text-slate-400">چاودێری کۆگا، نرخ، بەکارهاتوو، تێچوو، و تەلفیات (Ruin)</p>
+        </div>
       </div>
-      <div class="text-left">
-        <span class="text-xs text-slate-500 font-bold block">کۆی کڕیاران</span>
-        <span id="totalCustomerCount" class="text-2xl font-black text-emerald-600">0</span>
+      <div class="flex items-center gap-2 mt-2 sm:mt-0">
+        <button onclick="exportData()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs px-3 py-1.5 rounded-lg transition">💾 دابەزاندنی باکئەپ</button>
+        <label class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs px-3 py-1.5 rounded-lg cursor-pointer transition">
+          📂 گەڕاندنەوە
+          <input type="file" id="importFile" onchange="importData(event)" class="hidden">
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- KPI Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-xs font-bold text-slate-500">کۆی بەهای کەرەستەی ناو کۆگا</span>
+        <p id="kpiTotalStockValue" class="text-xl font-black text-emerald-600 mt-1">0 IQD</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-xs font-bold text-slate-500">کۆی تێچووی بەکارهاتوو (Expenses)</span>
+        <p id="kpiTotalExpenses" class="text-xl font-black text-blue-600 mt-1">0 IQD</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-xs font-bold text-slate-500">کۆی ژمارەی بەکارهاتوو (Spent Pieces)</span>
+        <p id="kpiTotalSpent" class="text-xl font-black text-amber-600 mt-1">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-xs font-bold text-slate-500">کۆی پارچەی تەلفیات (Ruin)</span>
+        <p id="kpiTotalRuin" class="text-xl font-black text-rose-600 mt-1">0</p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- فۆڕمی زیادکردنی کڕیار -->
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 h-fit">
-        <h2 class="text-base font-bold text-slate-800 mb-4 pb-2 border-b">زیادکردنی کڕیاری نوێ</h2>
-        <form id="customerForm" class="space-y-3">
+    <!-- Quick Operations Forms -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- 1. Add / Purchase Material -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-800 mb-3 text-emerald-700 flex items-center gap-1">➕ زیادکردن / کڕینی پێکهاتە</h3>
+        <form id="purchaseForm" class="space-y-2.5">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">ناوی بازرگان / مارکێت *</label>
-            <input type="text" id="custName" placeholder="بۆ نموونە: کۆمپانیای کاروان / مارکێتی سەروەر" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">پێکهاتە هەڵبژێرە یان ناوی نوێ بنووسە</label>
+            <input type="text" id="matNameInput" list="materialList" placeholder="ناوی پێکهاتە (وەک: Preform & Tin 4Ltr)" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            <datalist id="materialList"></datalist>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">ژمارەی مۆبایل</label>
-            <input type="text" id="custPhone" placeholder="0750 000 0000" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">بڕی کڕین/کۆگا (Storage)</label>
+              <input type="number" step="any" id="matQty" placeholder="بڕ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">نرخی یەکە (Price)</label>
+              <input type="number" step="any" id="matPrice" placeholder="نرخ" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">شار / ناونیشان</label>
-            <input type="text" id="custAddress" placeholder="سلێمانی، هەولێر..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">باڵانسی سەرەتایی (قەرزی پێشوو ئەگەر هەبێت)</label>
-            <input type="number" step="any" id="custBalance" value="0" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">تێبینی</label>
-            <textarea id="custNotes" rows="2" placeholder="تێبینی تایبەت..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
-          </div>
-          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm transition">تۆمارکردنی کڕیار</button>
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs transition">تۆمارکردنی کڕین</button>
         </form>
       </div>
 
-      <!-- لیستی کڕیاران -->
-      <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-base font-bold text-slate-800">لیستی سەرجەم کڕیارە تۆمارکراوەکان</h2>
-          <input type="text" id="searchInput" onkeyup="filterCustomers()" placeholder="گەڕان بەپێی ناو یان شار..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-52">
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-right text-sm">
-            <thead class="bg-slate-50 border-b text-slate-600 text-xs">
-              <tr>
-                <th class="p-3">ناو</th>
-                <th class="p-3">پەیوەندی</th>
-                <th class="p-3">ناونیشان</th>
-                <th class="p-3">باڵانس / قەرز</th>
-                <th class="p-3">کردار</th>
-              </tr>
-            </thead>
-            <tbody id="customersTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
+      <!-- 2. Record Usage / Ruin -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-800 mb-3 text-amber-700 flex items-center gap-1">⚙️ بەکارهێنان لە هێڵ و تەلفیات</h3>
+        <form id="usageForm" class="space-y-2.5">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">پێکهاتە هەڵبژێرە</label>
+            <select id="usageMatSelect" required class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white"></select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">بەکارهاتوو (Spent Pieces)</label>
+              <input type="number" step="any" id="usageSpent" placeholder="دانە" required class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">تەلفیات (Ruin)</label>
+              <input type="number" step="any" id="usageRuin" placeholder="دانە (ئەگەر هەبوو)" value="0" class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-lg text-xs transition">کەمکردنەوە لە کۆگا</button>
+        </form>
       </div>
 
+      <!-- Quick Info / Balance -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-slate-800 mb-2">ڕێنمایی حسابات</h3>
+          <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+            <li><strong>Storage:</strong> ژمارەی بەردەست لە کۆگا.</li>
+            <li><strong>Price:</strong> نرخی کڕینی یەک پارچە.</li>
+            <li><strong>Warehouse Value:</strong> کۆی بەهای کەرەستەی ماوە ($Storage \times Price$).</li>
+            <li><strong>Expenses:</strong> تێچووی بەکارهاتوو ($Spent \times Price$).</li>
+            <li><strong>Ruin:</strong> تەلفیاتی پەیدابوو لە پرۆسەی بەرهەمهێنان.</li>
+          </ul>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <!-- Master Google Sheet-like Grid -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
+        <h2 class="text-sm font-bold">خشتەی گشتی پێکهاتە و کەرەستەکان (Materials Master Table)</h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-center text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-800 text-white border-b border-slate-700">
+              <th class="p-3 text-right">Materials (ناوی پێکهاتە)</th>
+              <th class="p-3 bg-slate-700/50">Storage (کۆگا)</th>
+              <th class="p-3">Price (نرخ)</th>
+              <th class="p-3 bg-emerald-950/40 text-emerald-300">Prices of warehouse materials</th>
+              <th class="p-3 bg-amber-950/30 text-amber-300">Spent Pieces (بەکارهاتوو)</th>
+              <th class="p-3 bg-rose-950/30 text-rose-300">Ruin (تەلفیات)</th>
+              <th class="p-3 bg-blue-950/40 text-blue-300">Expenses (تێچووی بەکارهاتوو)</th>
+              <th class="p-3">کردار</th>
+            </tr>
+          </thead>
+          <tbody id="materialsTableBody" class="divide-y divide-slate-200"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
 
   <script>
-    let customers = JSON.parse(localStorage.getItem("oil_customers")) || [];
+    // Initial Dataset based exactly on provided sheet
+    const defaultMaterials = [
+      { id: 1, name: "Preform & Tin / 800 & 1500 Ml", storage: 162685, price: 187, spent: 127425, ruin: 0 },
+      { id: 2, name: "Preform & Tin / 3 Ltr & 4.5 Ltr & 5 Ltr", storage: 22281, price: 466, spent: 23889, ruin: 0 },
+      { id: 3, name: "Preform & Tin / Tin 2Ltr", storage: 5765, price: 2032, spent: 0, ruin: 0 },
+      { id: 4, name: "Preform & Tin / Tin 4Ltr", storage: 1634, price: 2000, spent: 4460, ruin: 0 },
+      { id: 5, name: "Stickers / 250 Ml", storage: 2000, price: 398, spent: 0, ruin: 0 },
+      { id: 6, name: "Stickers / 500 Ml", storage: 22882, price: 54, spent: 0, ruin: 0 },
+      { id: 7, name: "Stickers / 800 Ml", storage: 86062, price: 36, spent: 61299, ruin: 0 }
+    ];
+
+    let materials = JSON.parse(localStorage.getItem('oil_mat_data')) || defaultMaterials;
 
     function saveAndRender() {
-      localStorage.setItem("oil_customers", JSON.stringify(customers));
-      renderList(customers);
+      localStorage.setItem('oil_mat_data', JSON.stringify(materials));
+      renderTable();
     }
 
-    function renderList(list) {
-      const tbody = document.getElementById("customersTableBody");
-      tbody.innerHTML = "";
-      document.getElementById("totalCustomerCount").innerText = customers.length;
+    function renderTable() {
+      const tbody = document.getElementById('materialsTableBody');
+      const dataList = document.getElementById('materialList');
+      const usageSelect = document.getElementById('usageMatSelect');
 
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400 text-xs">هیچ کڕیارێک تۆمار نەکراوە</td></tr>`;
-        return;
-      }
+      tbody.innerHTML = '';
+      dataList.innerHTML = '';
+      usageSelect.innerHTML = '';
 
-      list.forEach((c) => {
-        const balance = parseFloat(c.balance || 0);
+      let totalStockVal = 0;
+      let totalExpenses = 0;
+      let totalSpent = 0;
+      let totalRuin = 0;
+
+      materials.forEach(mat => {
+        const warehouseVal = mat.storage * mat.price;
+        const expensesVal = mat.spent * mat.price;
+
+        totalStockVal += warehouseVal;
+        totalExpenses += expensesVal;
+        totalSpent += mat.spent;
+        totalRuin += (mat.ruin || 0);
+
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 font-bold text-slate-800">${c.name}</td>
-            <td class="p-3 text-slate-600 text-xs" dir="ltr">${c.phone || "-"}</td>
-            <td class="p-3 text-slate-600 text-xs">${c.address || "-"}</td>
-            <td class="p-3 font-bold text-xs ${balance > 0 ? 'text-rose-600' : 'text-slate-600'}">
-              ${balance.toLocaleString()} IQD
-            </td>
+            <td class="p-3 text-right font-bold text-slate-800">${mat.name}</td>
+            <td class="p-3 font-bold bg-slate-50">${mat.storage.toLocaleString()}</td>
+            <td class="p-3">${mat.price.toLocaleString()}</td>
+            <td class="p-3 font-semibold text-emerald-700 bg-emerald-50/40">${warehouseVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="p-3 font-medium text-amber-700 bg-amber-50/40">${mat.spent.toLocaleString()}</td>
+            <td class="p-3 font-medium text-rose-700 bg-rose-50/40">${(mat.ruin || 0).toLocaleString()}</td>
+            <td class="p-3 font-bold text-blue-700 bg-blue-50/40">${expensesVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             <td class="p-3">
-              <button onclick="deleteCustomer(${c.id})" class="text-xs text-rose-500 hover:text-rose-700 font-semibold">سڕینەوە</button>
+              <button onclick="deleteMaterial(${mat.id})" class="text-rose-500 hover:text-rose-700 font-medium">سڕینەوە</button>
             </td>
           </tr>
         `;
+
+        dataList.innerHTML += `<option value="${mat.name}">`;
+        usageSelect.innerHTML += `<option value="${mat.id}">${mat.name} (ماوە: ${mat.storage.toLocaleString()})</option>`;
       });
+
+      // Update KPI
+      document.getElementById('kpiTotalStockValue').innerText = totalStockVal.toLocaleString() + ' IQD';
+      document.getElementById('kpiTotalExpenses').innerText = totalExpenses.toLocaleString() + ' IQD';
+      document.getElementById('kpiTotalSpent').innerText = totalSpent.toLocaleString();
+      document.getElementById('kpiTotalRuin').innerText = totalRuin.toLocaleString();
     }
 
-    document.getElementById("customerForm").addEventListener("submit", (e) => {
+    // Handle Purchase / New Material
+    document.getElementById('purchaseForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const newCust = {
-        id: Date.now(),
-        name: document.getElementById("custName").value.trim(),
-        phone: document.getElementById("custPhone").value.trim(),
-        address: document.getElementById("custAddress").value.trim(),
-        balance: parseFloat(document.getElementById("custBalance").value) || 0,
-        notes: document.getElementById("custNotes").value.trim()
-      };
+      const name = document.getElementById('matNameInput').value.trim();
+      const qty = parseFloat(document.getElementById('matQty').value);
+      const price = parseFloat(document.getElementById('matPrice').value);
 
-      customers.push(newCust);
+      const existing = materials.find(m => m.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        existing.storage += qty;
+        existing.price = price;
+      } else {
+        materials.push({
+          id: Date.now(),
+          name: name,
+          storage: qty,
+          price: price,
+          spent: 0,
+          ruin: 0
+        });
+      }
+
       saveAndRender();
       e.target.reset();
     });
 
-    function deleteCustomer(id) {
-      if (confirm("دڵنیایت لە سڕینەوەی ئەم کڕیارە؟")) {
-        customers = customers.filter(c => c.id !== id);
+    // Handle Usage & Ruin
+    document.getElementById('usageForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('usageMatSelect').value);
+      const spent = parseFloat(document.getElementById('usageSpent').value) || 0;
+      const ruin = parseFloat(document.getElementById('usageRuin').value) || 0;
+
+      const mat = materials.find(m => m.id === id);
+      if (!mat) return;
+
+      const totalDeduct = spent + ruin;
+      if (mat.storage < totalDeduct) {
+        alert('بڕی ماوە لە کۆگا بەش ناکات!');
+        return;
+      }
+
+      mat.storage -= totalDeduct;
+      mat.spent += spent;
+      mat.ruin = (mat.ruin || 0) + ruin;
+
+      saveAndRender();
+      e.target.reset();
+    });
+
+    function deleteMaterial(id) {
+      if (confirm('دڵنیایت لە سڕینەوەی ئەم پێکهاتەیە؟')) {
+        materials = materials.filter(m => m.id !== id);
         saveAndRender();
       }
     }
 
-    function filterCustomers() {
-      const q = document.getElementById("searchInput").value.toLowerCase();
-      const filtered = customers.filter(c => 
-        c.name.toLowerCase().includes(q) || (c.address && c.address.toLowerCase().includes(q))
-      );
-      renderList(filtered);
+    // Export/Import JSON Backup
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(materials));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `Oil_Materials_Sheet_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     }
 
-    renderList(customers);
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          materials = JSON.parse(event.target.result);
+          saveAndRender();
+          alert('زانیارییەکان بە سەرکەوتوویی بارکرانەوە!');
+        } catch (err) {
+          alert('فایلەکە دروست نییە!');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    renderTable();
   </script>
 </body>
 </html>
