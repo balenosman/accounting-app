@@ -1,4 +1,4 @@
-// global.js
+// ==================== global.js ====================
 let db = {
   customers: JSON.parse(localStorage.getItem('oil_db_cust_v6')) || [],
   suppliers: JSON.parse(localStorage.getItem('oil_db_supp_v7')) || [],
@@ -21,7 +21,7 @@ function saveGlobalDB() {
   localStorage.setItem('oil_db_exp_v6', JSON.stringify(db.expenses));
 }
 
-// فەنکشنەکانی سڕینەوەی گشتی
+// فەنکشنی سڕینەوە و گەڕاندنەوەی داتاکان
 function globalDeleteSale(id) {
   const s = db.sales.find(x => x.id === id);
   if (s) {
@@ -43,8 +43,8 @@ function globalDeletePurchase(id) {
     if (mat) mat.qty = Math.max(0, (mat.qty || 0) - p.qty);
     const supp = db.suppliers.find(s => s.name === p.suppName);
     if (supp) {
-        if (p.currency === 'USD') supp.debtUSD = Math.max(0, (supp.debtUSD || 0) - p.total);
-        else supp.debtIQD = Math.max(0, (supp.debtIQD || 0) - p.total);
+      if (p.currency === 'USD') supp.debtUSD = Math.max(0, (supp.debtUSD || 0) - p.total);
+      else supp.debtIQD = Math.max(0, (supp.debtIQD || 0) - p.total);
     }
   }
   db.purchases = db.purchases.filter(x => x.id !== id);
