@@ -16,10 +16,10 @@
       font-weight: 700;
     }
     @media print {
-      nav, .no-print, header, button { display: none !important; }
-      body { background-color: #fff !important; padding: 0 !important; margin: 0 !important; }
-      #invoicePrintModal { display: flex !important; position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: auto !important; background: transparent !important; z-index: 9999 !important; padding: 0 !important; align-items: flex-start !important; justify-content: center !important; }
-      #invoicePrintContent { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+      body * { visibility: hidden; }
+      #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
+      #printableInvoiceArea { position: absolute; top: 0; left: 0; width: 100%; background: #fff; padding: 20px; }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
@@ -100,20 +100,20 @@
     <!-- دابینکەران -->
     <section id="sec-suppliers" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
-          <h2 class="text-sm font-bold mb-3 pb-2 border-b">تۆمارکردنی دابینکەر</h2>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">تۆمارکردنی دابینکەر</h2>
           <form id="supplierForm" onsubmit="addSupplier(event)" class="space-y-3">
-            <div><label class="block text-xs font-semibold mb-1">ناو *</label><input type="text" id="suppName" required class="w-full border rounded p-2 text-xs"></div>
-            <div><label class="block text-xs font-semibold mb-1">مۆبایل</label><input type="text" id="suppPhone" class="w-full border rounded p-2 text-xs"></div>
-            <div><label class="block text-xs font-semibold mb-1">ناونیشان</label><input type="text" id="suppAddress" class="w-full border rounded p-2 text-xs"></div>
-            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded text-xs">تۆمارکردن</button>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">ناو *</label><input type="text" id="suppName" required class="w-full border rounded-lg p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">مۆبایل</label><input type="text" id="suppPhone" class="w-full border rounded-lg p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">ناونیشان</label><input type="text" id="suppAddress" class="w-full border rounded-lg p-2 text-xs"></div>
+            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردن</button>
           </form>
         </div>
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm">
-          <h2 class="text-sm font-bold mb-4">لیستی دابینکەران (کلیک لەسەر ناو بۆ کەشف حساب)</h2>
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">لیستی دابینکەران</h2>
           <table class="w-full text-right text-xs">
-            <thead class="bg-slate-50 border-b"><tr><th class="p-3">ناو</th><th class="p-3">مۆبایل</th><th class="p-3">ناونیشان</th><th class="p-3">قەرز</th><th class="p-3 text-center">کردار</th></tr></thead>
-            <tbody id="suppliersTableBody" class="divide-y"></tbody>
+            <thead class="bg-slate-50 border-b text-slate-600"><tr><th class="p-3">ناو</th><th class="p-3">مۆبایل</th><th class="p-3">ناونیشان</th><th class="p-3">قەرز</th><th class="p-3 text-center">کردار</th></tr></thead>
+            <tbody id="suppliersTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -122,24 +122,24 @@
     <!-- کڕین -->
     <section id="sec-purchases" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
-          <h2 class="text-sm font-bold mb-3 pb-2 border-b">وەسڵی کڕین</h2>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">تۆمارکردنی وەسڵی کڕین</h2>
           <form id="purchaseForm" onsubmit="handlePurchase(event)" class="space-y-3">
-            <div><label class="block text-xs font-semibold mb-1">دابینکەر *</label><select id="purSupplierSelect" onchange="filterPurchaseMaterialsBySupplier()" required class="w-full border rounded p-2 text-xs bg-white"></select></div>
-            <div><label class="block text-xs font-semibold mb-1">پێکهاتە *</label><select id="purItemSelect" required class="w-full border rounded p-2 text-xs bg-white"></select></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">دابینکەر *</label><select id="purSupplierSelect" onchange="filterPurchaseMaterialsBySupplier()" required class="w-full border rounded-lg p-2 text-xs bg-white"></select></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">پێکهاتە *</label><select id="purItemSelect" required class="w-full border rounded-lg p-2 text-xs bg-white"></select></div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="block text-xs font-semibold mb-1">بڕ *</label><input type="number" step="any" id="purQty" required class="w-full border rounded p-2 text-xs"></div>
-              <div><label class="block text-xs font-semibold mb-1">دراو</label><select id="purCurrency" class="w-full border rounded p-2 text-xs bg-white"><option value="IQD">IQD</option><option value="USD">USD</option></select></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">بڕ *</label><input type="number" step="any" id="purQty" required class="w-full border rounded-lg p-2 text-xs"></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">دراو</label><select id="purCurrency" class="w-full border rounded-lg p-2 text-xs bg-white"><option value="IQD">IQD</option><option value="USD">USD</option></select></div>
             </div>
-            <div><label class="block text-xs font-semibold mb-1">نرخی کڕین *</label><input type="number" step="any" id="purCost" required class="w-full border rounded p-2 text-xs"></div>
-            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded text-xs">تۆمارکردن</button>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">نرخی کڕین *</label><input type="number" step="any" id="purCost" required class="w-full border rounded-lg p-2 text-xs"></div>
+            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردن</button>
           </form>
         </div>
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm">
-          <h2 class="text-sm font-bold mb-4">مێژووی کڕینەکان</h2>
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">مێژووی کڕینەکان</h2>
           <table class="w-full text-right text-xs">
-            <thead class="bg-slate-50 border-b"><tr><th class="p-3">دابینکەر</th><th class="p-3">پێکهاتە</th><th class="p-3">بڕ</th><th class="p-3">تێچوو</th><th class="p-3">کۆی گشتی</th><th class="p-3 text-center">کردار</th></tr></thead>
-            <tbody id="purchasesTableBody" class="divide-y"></tbody>
+            <thead class="bg-slate-50 border-b text-slate-600"><tr><th class="p-3">دابینکەر</th><th class="p-3">پێکهاتە</th><th class="p-3">بڕ</th><th class="p-3">تێچوو</th><th class="p-3">کۆی گشتی</th><th class="p-3 text-center">کردار</th></tr></thead>
+            <tbody id="purchasesTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -147,16 +147,16 @@
 
     <!-- بەرهەمهێنان -->
     <section id="sec-production" class="space-y-6 hidden">
-      <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-        <h2 class="text-base font-bold border-b pb-2">بەرهەمهێنانی زەیت</h2>
+      <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-slate-800 border-b pb-2">بەرهەمهێنانی زەیت</h2>
         <form id="produceForm" onsubmit="handleProduction(event)" class="space-y-3">
-          <div><label class="block text-xs font-semibold mb-1">کارتۆنی زەیت *</label><select id="produceOilSelect" onchange="showBOMPreview()" required class="w-full border rounded p-2.5 text-xs bg-white"></select></div>
-          <div id="bomPreviewBox" class="p-3 bg-slate-50 border rounded text-xs space-y-1 hidden">
-            <div class="flex justify-between items-center mb-1"><span class="font-bold">پێکهاتە بۆ ١ کارتۆن:</span><span id="bomCostPreviewBadge" class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">0 IQD</span></div>
+          <div><label class="block text-xs font-semibold text-slate-600 mb-1">کارتۆنی زەیت *</label><select id="produceOilSelect" onchange="showBOMPreview()" required class="w-full border rounded-lg p-2.5 text-xs bg-white"></select></div>
+          <div id="bomPreviewBox" class="p-3 bg-slate-50 border rounded-lg text-xs space-y-1 hidden">
+            <div class="flex justify-between items-center mb-1"><span class="font-bold text-slate-700">پێکهاتە بۆ ١ کارتۆن:</span><span id="bomCostPreviewBadge" class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">0 IQD</span></div>
             <ul id="bomPreviewList" class="list-disc list-inside text-slate-600 space-y-0.5"></ul>
           </div>
-          <div><label class="block text-xs font-semibold mb-1">ژمارەی کارتۆن *</label><input type="number" step="any" id="produceQty" required class="w-full border rounded p-2.5 text-xs"></div>
-          <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded text-xs">تەواوکردنی بەرهەمهێنان</button>
+          <div><label class="block text-xs font-semibold text-slate-600 mb-1">ژمارەی کارتۆن *</label><input type="number" step="any" id="produceQty" required class="w-full border rounded-lg p-2.5 text-xs"></div>
+          <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded-lg text-xs">تەواوکردنی بەرهەمهێنان</button>
         </form>
       </div>
     </section>
@@ -164,22 +164,22 @@
     <!-- فرۆشتن -->
     <section id="sec-sales" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
-          <h2 class="text-sm font-bold mb-3 pb-2 border-b">تۆمارکردنی وەسڵی فرۆشتن</h2>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">تۆمارکردنی وەسڵی فرۆشتن</h2>
           <form id="salesForm" onsubmit="handleSale(event)" class="space-y-3">
-            <div><label class="block text-xs font-semibold mb-1">کڕیار *</label><select id="saleCustomerSelect" required class="w-full border rounded p-2 text-xs bg-white"></select></div>
-            <div><label class="block text-xs font-semibold mb-1">کارتۆنی زەیت *</label><select id="saleOilSelect" onchange="autoFillPriceAndDetails()" required class="w-full border rounded p-2 text-xs bg-white"></select></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">کڕیار *</label><select id="saleCustomerSelect" required class="w-full border rounded-lg p-2 text-xs bg-white"></select></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">کارتۆنی زەیت *</label><select id="saleOilSelect" onchange="autoFillPriceAndDetails()" required class="w-full border rounded-lg p-2 text-xs bg-white"></select></div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="block text-xs font-semibold mb-1">بڕی کارتۆن *</label><input type="number" step="any" id="saleQty" required class="w-full border rounded p-2 text-xs"></div>
-              <div><label class="block text-xs font-semibold mb-1">هەدیە کارتۆن</label><input type="number" step="any" id="saleGiftCartons" value="0" class="w-full border rounded p-2 text-xs"></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">بڕی کارتۆن *</label><input type="number" step="any" id="saleQty" required class="w-full border rounded-lg p-2 text-xs"></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">هەدیە کارتۆن</label><input type="number" step="any" id="saleGiftCartons" value="0" class="w-full border rounded-lg p-2 text-xs"></div>
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="block text-xs font-semibold mb-1">نرخی کارتۆن *</label><input type="number" step="any" id="salePrice" required class="w-full border rounded p-2 text-xs"></div>
-              <div><label class="block text-xs font-semibold mb-1">شێواز</label><select id="salePayType" class="w-full border rounded p-2 text-xs bg-white"><option value="قەرز">قەرز</option><option value="نەخت (کاش)">نەخت (کاش)</option></select></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">نرخی کارتۆن *</label><input type="number" step="any" id="salePrice" required class="w-full border rounded-lg p-2 text-xs"></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">شێواز</label><select id="salePayType" class="w-full border rounded-lg p-2 text-xs bg-white"><option value="قەرز">قەرز</option><option value="نەخت (کاش)">نەخت (کاش)</option></select></div>
             </div>
-            <div><label class="block text-xs font-semibold mb-1">شۆفێر</label><input type="text" id="saleDriverName" class="w-full border rounded p-2 text-xs"></div>
-            <div><label class="block text-xs font-semibold mb-1">تێبینی</label><input type="text" id="saleNote" class="w-full border rounded p-2 text-xs"></div>
-            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded text-xs">تۆمارکردن</button>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">شۆفێر</label><input type="text" id="saleDriverName" class="w-full border rounded-lg p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">تێبینی</label><input type="text" id="saleNote" class="w-full border rounded-lg p-2 text-xs"></div>
+            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردن</button>
           </form>
         </div>
         <div class="lg:col-span-2 space-y-4">
@@ -192,20 +192,20 @@
     <!-- کڕیاران -->
     <section id="sec-customers" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
-          <h2 class="text-sm font-bold mb-3 pb-2 border-b">تۆمارکردنی کڕیار</h2>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">تۆمارکردنی کڕیار</h2>
           <form id="customerForm" onsubmit="addCustomer(event)" class="space-y-3">
-            <div><label class="block text-xs font-semibold mb-1">ناو *</label><input type="text" id="custName" required class="w-full border rounded p-2 text-xs"></div>
-            <div><label class="block text-xs font-semibold mb-1">مۆبایل</label><input type="text" id="custPhone" class="w-full border rounded p-2 text-xs"></div>
-            <div><label class="block text-xs font-semibold mb-1">ناونیشان</label><input type="text" id="custAddress" class="w-full border rounded p-2 text-xs"></div>
-            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded text-xs">تۆمارکردن</button>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">ناو *</label><input type="text" id="custName" required class="w-full border rounded-lg p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">مۆبایل</label><input type="text" id="custPhone" class="w-full border rounded-lg p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">ناونیشان</label><input type="text" id="custAddress" class="w-full border rounded-lg p-2 text-xs"></div>
+            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردن</button>
           </form>
         </div>
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm">
-          <h2 class="text-sm font-bold mb-4">لیستی کڕیاران (کلیک لەسەر ناو بۆ کەشف حساب)</h2>
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">لیستی کڕیارەکان</h2>
           <table class="w-full text-right text-xs">
             <thead class="bg-slate-50 border-b text-slate-600"><tr><th class="p-3">ناو</th><th class="p-3">مۆبایل</th><th class="p-3">ناونیشان</th><th class="p-3">قەرز</th><th class="p-3 text-center">کردار</th></tr></thead>
-            <tbody id="customersTableBody" class="divide-y"></tbody>
+            <tbody id="customersTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -214,18 +214,18 @@
     <!-- قەرز -->
     <section id="sec-debts" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <h2 class="text-sm font-bold text-emerald-800 mb-4">قەرزی کڕیاران</h2>
           <table class="w-full text-right text-xs">
             <thead class="bg-slate-50 border-b"><tr><th class="p-2">کڕیار</th><th class="p-2">دینار</th><th class="p-2">دۆلار</th><th class="p-2 text-center">کردار</th></tr></thead>
-            <tbody id="custDebtsTableBody" class="divide-y"></tbody>
+            <tbody id="custDebtsTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
-        <div class="bg-white p-5 rounded-2xl border shadow-sm">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <h2 class="text-sm font-bold text-rose-800 mb-4">قەرزی دابینکەران</h2>
           <table class="w-full text-right text-xs">
             <thead class="bg-slate-50 border-b"><tr><th class="p-2">دابینکەر</th><th class="p-2">دینار</th><th class="p-2">دۆلار</th><th class="p-2 text-center">کردار</th></tr></thead>
-            <tbody id="suppDebtsTableBody" class="divide-y"></tbody>
+            <tbody id="suppDebtsTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -234,35 +234,35 @@
     <!-- مەخزەن -->
     <section id="sec-warehouse" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
-          <h2 class="text-sm font-bold mb-3 pb-2 border-b">ناساندنی کارتۆنی زەیت</h2>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">ناساندنی کارتۆنی زەیت</h2>
           <form id="oilWarehouseForm" onsubmit="defineReadyOil(event)" class="space-y-3">
-            <div><label class="block text-xs font-semibold mb-1">ناوی کارتۆن *</label><input type="text" id="oilDefName" required class="w-full border rounded p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">ناوی کارتۆن *</label><input type="text" id="oilDefName" required class="w-full border rounded-lg p-2 text-xs"></div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="block text-xs font-semibold mb-1">عەدەد *</label><input type="number" step="any" id="oilBottlesPerCarton" required class="w-full border rounded p-2 text-xs"></div>
-              <div><label class="block text-xs font-semibold mb-1">کێش (Kg) *</label><input type="number" step="any" id="oilWeightPerCarton" required class="w-full border rounded p-2 text-xs"></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">عەدەد *</label><input type="number" step="any" id="oilBottlesPerCarton" required class="w-full border rounded-lg p-2 text-xs"></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">کێش (Kg) *</label><input type="number" step="any" id="oilWeightPerCarton" required class="w-full border rounded-lg p-2 text-xs"></div>
             </div>
-            <div><label class="block text-xs font-semibold mb-1">نرخ *</label><input type="number" step="any" id="oilDefPrice" required class="w-full border rounded p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">نرخ *</label><input type="number" step="any" id="oilDefPrice" required class="w-full border rounded-lg p-2 text-xs"></div>
             <div class="border-t pt-3 space-y-2">
-              <span class="block text-xs font-bold">پێکهاتەکان بۆ ١ کارتۆن:</span>
+              <span class="block text-xs font-bold text-slate-700">پێکهاتەکان بۆ ١ کارتۆن:</span>
               <div class="flex gap-2">
-                <select id="bomMatSelect" class="w-2/3 border rounded p-1.5 text-xs bg-white"></select>
-                <input type="number" step="any" id="bomMatQty" placeholder="بڕ" class="w-1/3 border rounded p-1.5 text-xs">
+                <select id="bomMatSelect" class="w-2/3 border rounded-lg p-1.5 text-xs bg-white"></select>
+                <input type="number" step="any" id="bomMatQty" placeholder="بڕ" class="w-1/3 border rounded-lg p-1.5 text-xs">
               </div>
-              <button type="button" onclick="addBOMRow()" class="w-full bg-slate-200 text-slate-800 py-1.5 rounded text-xs font-semibold">➕ زیادکردن</button>
-              <div id="tempBOMList" class="space-y-1 mt-2 text-xs max-h-28 overflow-y-auto"></div>
-              <div class="bg-rose-50 p-2 rounded border flex justify-between items-center text-xs">
+              <button type="button" onclick="addBOMRow()" class="w-full bg-slate-200 text-slate-800 py-1.5 rounded-lg text-xs font-semibold">➕ زیادکردن</button>
+              <div id="tempBOMList" class="space-y-1 mt-2 text-xs text-slate-600 max-h-28 overflow-y-auto"></div>
+              <div class="bg-rose-50 p-2 rounded-lg border flex justify-between items-center text-xs">
                 <span class="font-bold text-rose-900">تێچوو:</span><span id="calculatedCostDisplay" class="font-black text-rose-700">0 IQD</span>
               </div>
             </div>
-            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded text-xs">تۆمارکردن</button>
+            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردن</button>
           </form>
         </div>
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm">
-          <h2 class="text-sm font-bold mb-4">مەخزەن</h2>
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">مەخزەن</h2>
           <table class="w-full text-right text-xs">
-            <thead class="bg-slate-50 border-b"><tr><th class="p-3">ناو</th><th class="p-3">بڕ</th><th class="p-3">عەدەد</th><th class="p-3">کێش</th><th class="p-3">تێچوو</th><th class="p-3">نرخ</th><th class="p-3 text-center">کردار</th></tr></thead>
-            <tbody id="oilWarehouseTableBody" class="divide-y"></tbody>
+            <thead class="bg-slate-50 border-b text-slate-600"><tr><th class="p-3">ناو</th><th class="p-3">بڕی کارتۆن</th><th class="p-3">عەدەد</th><th class="p-3">کێش</th><th class="p-3">تێچوو</th><th class="p-3">نرخ</th><th class="p-3 text-center">کردار</th></tr></thead>
+            <tbody id="oilWarehouseTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -271,20 +271,20 @@
     <!-- مەواد -->
     <section id="sec-materials" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
-          <h2 class="text-sm font-bold mb-3 pb-2 border-b">تۆمارکردنی مەواد</h2>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">تۆمارکردنی مەواد</h2>
           <form id="materialForm" onsubmit="defineMaterial(event)" class="space-y-3">
-            <div><label class="block text-xs font-semibold mb-1">ناو *</label><input type="text" id="matDefName" required class="w-full border rounded p-2 text-xs"></div>
-            <div><label class="block text-xs font-semibold mb-1">دابینکەر *</label><select id="matDefSupplier" required class="w-full border rounded p-2 text-xs bg-white"></select></div>
-            <div><label class="block text-xs font-semibold mb-1">یەکە</label><select id="matDefUnit" class="w-full border rounded p-2 text-xs bg-white"><option value="دانە">دانە</option><option value="کیلۆگرام">کیلۆگرام</option></select></div>
-            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded text-xs">تۆمارکردن</button>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">ناو *</label><input type="text" id="matDefName" required class="w-full border rounded-lg p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">دابینکەر *</label><select id="matDefSupplier" required class="w-full border rounded-lg p-2 text-xs bg-white"></select></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">یەکە</label><select id="matDefUnit" class="w-full border rounded-lg p-2 text-xs bg-white"><option value="دانە">دانە</option><option value="کیلۆگرام">کیلۆگرام</option></select></div>
+            <button type="submit" class="w-full bg-[#244b5c] text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردن</button>
           </form>
         </div>
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm">
-          <h2 class="text-sm font-bold mb-4">مەوادەکان</h2>
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">مەوادەکان</h2>
           <table class="w-full text-right text-xs">
-            <thead class="bg-slate-50 border-b"><tr><th class="p-3">ناو</th><th class="p-3">دابینکەر</th><th class="p-3">بڕی ماوە</th><th class="p-3">تێچوو</th><th class="p-3 text-center">کردار</th></tr></thead>
-            <tbody id="materialsTableBody" class="divide-y"></tbody>
+            <thead class="bg-slate-50 border-b text-slate-600"><tr><th class="p-3">ناو</th><th class="p-3">دابینکەر</th><th class="p-3">بڕی ماوە</th><th class="p-3">تێچوو</th><th class="p-3 text-center">کردار</th></tr></thead>
+            <tbody id="materialsTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -293,22 +293,22 @@
     <!-- خەرجی -->
     <section id="sec-expenses" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white p-5 rounded-2xl border shadow-sm h-fit">
-          <h2 class="text-sm font-bold mb-3 pb-2 border-b">تۆمارکردنی خەرجی</h2>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b">تۆمارکردنی خەرجی</h2>
           <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-3">
-            <div><label class="block text-xs font-semibold mb-1">وەسف *</label><input type="text" id="expDesc" required class="w-full border rounded p-2 text-xs"></div>
+            <div><label class="block text-xs font-semibold text-slate-600 mb-1">وەسف *</label><input type="text" id="expDesc" required class="w-full border rounded-lg p-2 text-xs"></div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="block text-xs font-semibold mb-1">بڕ *</label><input type="number" step="any" id="expAmount" required class="w-full border rounded p-2 text-xs"></div>
-              <div><label class="block text-xs font-semibold mb-1">دراو</label><select id="expCurrency" class="w-full border rounded p-2 text-xs bg-white"><option value="IQD">IQD</option><option value="USD">USD</option></select></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">بڕ *</label><input type="number" step="any" id="expAmount" required class="w-full border rounded-lg p-2 text-xs"></div>
+              <div><label class="block text-xs font-semibold text-slate-600 mb-1">دراو</label><select id="expCurrency" class="w-full border rounded-lg p-2 text-xs bg-white"><option value="IQD">IQD</option><option value="USD">USD</option></select></div>
             </div>
-            <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded text-xs">تۆمارکردن</button>
+            <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-lg text-xs">تۆمارکردن</button>
           </form>
         </div>
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm">
-          <h2 class="text-sm font-bold mb-4">خەرجییەکان</h2>
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-sm font-bold text-slate-800 mb-4">خەرجییەکان</h2>
           <table class="w-full text-right text-xs">
-            <thead class="bg-slate-50 border-b"><tr><th class="p-3">جۆر</th><th class="p-3">وەسف</th><th class="p-3">بڕ</th><th class="p-3 text-center">کردار</th></tr></thead>
-            <tbody id="expensesTableBody" class="divide-y"></tbody>
+            <thead class="bg-slate-50 border-b text-slate-600"><tr><th class="p-3">جۆر</th><th class="p-3">وەسف</th><th class="p-3">بڕ</th><th class="p-3 text-center">کردار</th></tr></thead>
+            <tbody id="expensesTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
@@ -316,8 +316,8 @@
 
     <!-- ڕاپۆرت -->
     <section id="sec-reports" class="space-y-8 hidden">
-      <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-        <h2 class="text-base font-bold text-slate-800">ڕاپۆرتی سەرمایە و سندوق</h2>
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-slate-800">ڕاپۆرتی سەرمایە</h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="p-4 bg-slate-50 rounded-xl border"><span class="text-xs font-bold text-slate-500">بەهای مەواد</span><p id="capMatValIQD" class="text-lg font-black text-amber-700 mt-1">0 IQD</p></div>
           <div class="p-4 bg-slate-50 rounded-xl border"><span class="text-xs font-bold text-slate-500">بەهای مەخزەن</span><p id="capOilValIQD" class="text-lg font-black text-emerald-700 mt-1">0 IQD</p></div>
@@ -328,11 +328,11 @@
 
     <!-- بەڕێوەبردن -->
     <section id="sec-admin" class="space-y-6 hidden">
-      <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <h2 class="text-base font-bold text-slate-800">باکئەپ</h2>
         <div class="flex gap-3">
-          <button onclick="exportData()" class="bg-[#244b5c] text-white px-4 py-2 rounded text-xs font-bold">💾 باکئەپ</button>
-          <label class="bg-slate-700 text-white px-4 py-2 rounded text-xs font-bold cursor-pointer">📂 گەڕاندنەوە<input type="file" id="importFile" onchange="importData(event)" class="hidden"></label>
+          <button onclick="exportData()" class="bg-[#244b5c] text-white px-4 py-2 rounded-lg text-xs font-bold">💾 باکئەپ</button>
+          <label class="bg-slate-700 text-white px-4 py-2 rounded-lg text-xs font-bold cursor-pointer">📂 گەڕاندنەوە<input type="file" id="importFile" onchange="importData(event)" class="hidden"></label>
         </div>
       </div>
     </section>
@@ -450,7 +450,6 @@
 
     const editIcon = `<svg class="w-4 h-4 text-blue-600 hover:text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>`;
     const deleteIcon = `<svg class="w-4 h-4 text-rose-500 hover:text-rose-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
-    const printIcon = `<svg class="w-4 h-4 text-emerald-600 hover:text-emerald-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>`;
     const checkIcon = `<svg class="w-4 h-4 text-amber-600 hover:text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
 
     function saveDB() {
@@ -656,16 +655,22 @@
       const totalCartonsNeeded = qtyCartons + giftCartons;
 
       if (!oil || oil.qty < totalCartonsNeeded) {
-        alert(`بڕی کارتۆنی زەیت لە مەخزەن بەش ناکات! (پێویستە: ${totalCartonsNeeded})`);
+        alert(`بڕی کارتۆنی زەیت لە مەخزەن بەش ناکات!\nپێویستە: ${totalCartonsNeeded} کارتۆن\nلە مەخزەن هەیە: ${oil ? oil.qty : 0} کارتۆن`);
         return;
       }
 
       oil.qty -= totalCartonsNeeded;
       const total = qtyCartons * pricePerCarton;
-      const oldDebt = customer ? (customer.debtIQD || 0) : 0;
+      const bottlesInCarton = oil.bottlesPerCarton || 1;
+      const weightPerCarton = oil.weightPerCarton || 0;
+      const totalWeight = totalCartonsNeeded * weightPerCarton;
+
+      const oldDebt = customer ? (customer.debtIQD || customer.debt || 0) : 0;
       const newDebt = payType === 'قەرز' ? oldDebt + total : oldDebt;
 
-      if (payType === 'قەرز' && customer) customer.debtIQD = newDebt;
+      if (payType === 'قەرز' && customer) {
+        customer.debtIQD = newDebt;
+      }
 
       const saleRecord = {
         id: Date.now(),
@@ -676,10 +681,10 @@
         customerAddress: customer ? customer.address : '-',
         productName: oil.name,
         qty: qtyCartons,
-        bottlesPerCarton: oil.bottlesPerCarton || 1,
+        bottlesPerCarton: bottlesInCarton,
         giftCartons: giftCartons,
-        weightPerCarton: oil.weightPerCarton || 0,
-        totalWeight: totalCartonsNeeded * (oil.weightPerCarton || 0),
+        weightPerCarton: weightPerCarton,
+        totalWeight: totalWeight,
         price: pricePerCarton,
         total: total,
         oldDebt: oldDebt,
@@ -766,7 +771,8 @@
       let calculatedTotal = 0;
       tempBOM.forEach((b, idx) => {
         const mat = db.materials.find(m => m.id === b.matId);
-        calculatedTotal += (b.qty * (mat ? (mat.lastCost || 0) : 0));
+        const rowCost = b.qty * (mat ? (mat.lastCost || 0) : 0);
+        calculatedTotal += rowCost;
         box.innerHTML += `
           <div class="flex justify-between items-center bg-slate-100 p-1.5 rounded">
             <span>• ${b.matName}: <strong>${b.qty} ${b.unit}</strong></span>
@@ -911,6 +917,7 @@
       const fields = document.getElementById('editModalFields');
       const title = document.getElementById('editModalTitle');
       fields.innerHTML = '';
+
       if (type === 'supplier') {
         const item = db.suppliers.find(x => x.id === id);
         title.innerText = 'دەستکاریکردنی دابینکەر';
@@ -948,7 +955,7 @@
     function renderAll() {
       updateDynamicSelects();
 
-      // Suppliers
+      // Suppliers Table
       const suppTbody = document.getElementById('suppliersTableBody');
       const suppDebtsTbody = document.getElementById('suppDebtsTableBody');
       suppTbody.innerHTML = ''; suppDebtsTbody.innerHTML = '';
@@ -977,7 +984,7 @@
         `;
       });
 
-      // Customers
+      // Customers Table
       const custTbody = document.getElementById('customersTableBody');
       const custDebtsTbody = document.getElementById('custDebtsTableBody');
       custTbody.innerHTML = ''; custDebtsTbody.innerHTML = '';
@@ -1016,12 +1023,18 @@
       } else {
         db.sales.forEach(s => {
           totalSalesIQD += s.total;
+          const isPrinted = s.printedStatus === 'چاپکراو';
           salesCardsContainer.innerHTML += `
             <div class="bg-white rounded-2xl border shadow-sm overflow-hidden text-xs">
               <div class="grid grid-cols-3 bg-emerald-50/60 p-3 border-b font-semibold text-slate-700 gap-2">
                 <div>ژ.وەسڵ: <span class="font-black text-slate-900">#${s.invNo || s.id}</span></div>
                 <div>ناوی کڕیار: <span class="font-bold text-slate-900">${s.customerName}</span></div>
                 <div class="text-left">ناونیشان: ${s.customerAddress || '-'}</div>
+              </div>
+              <div class="grid grid-cols-3 p-3 border-b bg-slate-50/50 gap-2 text-[11px] text-slate-600">
+                <div>بەڕوار: <span class="font-bold">${new Date(s.id).toLocaleDateString('ku-IQ')}</span></div>
+                <div>حالەت: <button onclick="togglePrintStatus(${s.id})" class="px-2 py-0.5 rounded text-white font-bold text-[10px] ${isPrinted ? 'bg-emerald-600' : 'bg-rose-600'}">${s.printedStatus || 'چاپ نەکراو'}</button></div>
+                <div class="text-left font-bold text-emerald-700">کۆی پسوولە: ${s.total.toLocaleString()} دینار</div>
               </div>
               <div class="p-3">
                 <table class="w-full text-right border-collapse text-xs">
@@ -1042,7 +1055,7 @@
               </div>
               <div class="flex justify-center items-center gap-3 p-2.5 bg-slate-50 border-t">
                 <button onclick="deleteSale(${s.id})" title="سڕینەوە" class="p-1">${deleteIcon}</button>
-                <button onclick="openInvoicePrint(${s.id})" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded text-xs hover:bg-emerald-700 shadow">🖨️ پرێنتی فەرمی (PDF)</button>
+                <button onclick="openInvoicePrint(${s.id})" class="bg-emerald-600 text-white font-bold px-3.5 py-1.5 rounded text-xs hover:bg-emerald-700 shadow">🖨️ پرێنتی فەرمی (PDF)</button>
               </div>
             </div>
           `;
@@ -1072,7 +1085,7 @@
       db.readyOil.forEach(o => {
         const cCost = calculateOilCost(o.bom);
         totalOilVal += (o.qty * cCost);
-        oilTbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-bold">${o.name}</td><td class="p-3 font-black">${o.qty.toLocaleString()} ک.</td><td class="p-3 text-blue-700">${o.bottlesPerCarton || 1} د.</td><td class="p-3 text-purple-700">${o.weightPerCarton || 0} Kg</td><td class="p-3 font-black text-rose-700">${cCost.toLocaleString()} IQD</td><td class="p-3 font-black text-emerald-700">${o.price.toLocaleString()} IQD</td><td class="p-3 text-center"><button onclick="deleteReadyOil(${o.id})">${deleteIcon}</button></td></tr>`;
+        oilTbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-bold">${o.name}</td><td class="p-3 font-black">${o.qty.toLocaleString()} کارتۆن</td><td class="p-3 text-blue-700">${o.bottlesPerCarton || 1} د.</td><td class="p-3 text-purple-700">${o.weightPerCarton || 0} Kg</td><td class="p-3 font-black text-rose-700">${cCost.toLocaleString()} IQD</td><td class="p-3 font-black text-emerald-700">${o.price.toLocaleString()} IQD</td><td class="p-3 text-center"><button onclick="deleteReadyOil(${o.id})">${deleteIcon}</button></td></tr>`;
       });
 
       // KPIs
